@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+
+    <!-- Importa a biblioteca jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nucleo de Policia Militar de Denise -Formulário de Serviço</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            color: #4CAF50;
+        }
+        label {
+            font-weight: bold;
+            color: #333;
+        }
+        .campo {
+            margin-bottom: 15px;
+            width: 100%;
+        }
+        input[type="text"], input[type="date"], input[type="time"], select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+        .campo select, .campo input[type="datetime-local"] {
+            background-color: #f9f9f9;
+        }
+        .campo textarea {
+            font-family: Arial, sans-serif;
+            resize: vertical;
+        }
+        .coluna {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .coluna div {
+            width: 22%; /* Ajustado para manter os campos na mesma linha */
+        }
+        .coluna div input,
+        .coluna div select {
+            width: 90%; /* Para deixar os campos mais compactos */
+        }
+        .coluna div label {
+            font-size: 12px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Melhorias para dispositivos móveis */
+        @media (max-width: 768px) {
+            .coluna div {
+                width: 100%;
+            }
+            h1 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>LIVRO DIARIO NPM DENISE </h1>
+
+    <form action="#" method="post">
+
+        <!-- Bloco 01 - Dados Gerais -->
+        <div class="campo">
+            <label for="data_inicial">Data Inicial do Serviço e Hora:</label>
+            <input type="datetime-local" id="data_inicial" name="data_inicial" required onchange="">
+        </div>
+        <div class="campo">
+           <label for="data_final">Data Final do Serviço e Hora:</label>
+           <input type="datetime-local" id="data_final" name="data_final" required onchange="">
+        </div>
+
+        <div class="campo">
+            <label for="recebimento_servico">Recebio o Serviço do:</label>
+            <select id="recebimento_servico" name="recebimento_servico" required>
+                <option value="">Selecione...</option>
+                <option value="1ºSGT PM BRUNO - RGPM 880.298">1ºSGT PM BRUNO - RGPM 880.298</option>
+                <option value="2ºSGT PM BROLEZI - RGPM 882.309">2ºSGT PM BROLEZI - RGPM 882.309</option>
+                <option value="2ºSGT PM WEBER - RGPM 883.426">2ºSGT PM WEBER - RGPM 883.426</option>
+                <option value="3ºSGT PM CAMPOS - RGPM 886.601">3ºSGT PM CAMPOS - RGPM 886.601</option>
+                <option value="CB PM ROBERT - RGPM 885.812">CB PM ROBERT - RGPM 885.812</option>
+                <option value="CB PM JOSIMAR - RGPM 886.222">CB PM JOSIMAR - RGPM 886.222</option>
+                <option value="CB PM R. SOUZA - RGPM 885.860">CB PM R. SOUZA - RGPM 885.860</option>
+                <option value="SD PM SOUZA - RGPM 885.916">SD PM SOUZA - RGPM 885.916</option>
+                <option value="SD PM THIAGO - RGPM 886.613">SD PM THIAGO - RGPM 886.613</option>
+                <option value="SD PM BRUNA - RGPM 886.605">SD PM BRUNA - RGPM 886.605</option>
+                <option value="SD PM LOBO - RGPM 886.612">SD PM LOBO - RGPM 886.612</option>
+                <option value="SD PM VINHAS - RGPM 887.097">SD PM VINHAS - RGPM 887.097</option>
+                <option value="SD PM DOUGLAS - RGPM 887.192">SD PM DOUGLAS - RGPM 887.192</option>
+            </select>
+        </div>
+
+        
+        <!-- Bloco 02 - Homens do Serviço -->
+        <div class="campo">
+            <label for="cmt_de_gu">CMT DE GU SV:</label>
+            <select id="cmt_de_gu" name="cmt_de_gu">
+<option value="">Selecione...</option>
+                <option value="1ºSGT PM BRUNO - RGPM 880.298">1ºSGT PM BRUNO - RGPM 880.298</option>
+                <option value="2ºSGT PM BROLEZI - RGPM 882.309">2ºSGT PM BROLEZI - RGPM 882.309</option>
+                <option value="2ºSGT PM WEBER - RGPM 883.426">2ºSGT PM WEBER - RGPM 883.426</option>
+                <option value="3ºSGT PM CAMPOS - RGPM 886.601">3ºSGT PM CAMPOS - RGPM 886.601</option>
+                <option value="CB PM ROBERT - RGPM 885.812">CB PM ROBERT - RGPM 885.812</option>
+                <option value="CB PM JOSIMAR - RGPM 886.222">CB PM JOSIMAR - RGPM 886.222</option>
+                <option value="CB PM R. SOUZA - RGPM 885.860">CB PM R. SOUZA - RGPM 885.860</option>
+                <option value="SD PM SOUZA - RGPM 885.916">SD PM SOUZA - RGPM 885.916</option>
+                <option value="SD PM THIAGO - RGPM 886.613">SD PM THIAGO - RGPM 886.613</option>
+                <option value="SD PM BRUNA - RGPM 886.605">SD PM BRUNA - RGPM 886.605</option>
+                <option value="SD PM LOBO - RGPM 886.612">SD PM LOBO - RGPM 886.612</option>
+                <option value="SD PM VINHAS - RGPM 887.097">SD PM VINHAS - RGPM 887.097</option>
+                <option value="SD PM DOUGLAS - RGPM 887.192">SD PM DOUGLAS - RGPM 887.192</option>
+                <option value="Em branco">Em branco</option>
+            </select>
+        </div>
+        <div class="campo">
+            <label for="motorista">Motorista:</label>
+            <select id="motorista" name="motorista">
+<option value="">Selecione...</option>
+                <option value="1ºSGT PM BRUNO - RGPM 880.298">1ºSGT PM BRUNO - RGPM 880.298</option>
+                <option value="2ºSGT PM BROLEZI - RGPM 882.309">2ºSGT PM BROLEZI - RGPM 882.309</option>
+                <option value="2ºSGT PM WEBER - RGPM 883.426">2ºSGT PM WEBER - RGPM 883.426</option>
+                <option value="3ºSGT PM CAMPOS - RGPM 886.601">3ºSGT PM CAMPOS - RGPM 886.601</option>
+                <option value="CB PM ROBERT - RGPM 885.812">CB PM ROBERT - RGPM 885.812</option>
+                <option value="CB PM JOSIMAR - RGPM 886.222">CB PM JOSIMAR - RGPM 886.222</option>
+                <option value="CB PM R. SOUZA - RGPM 885.860">CB PM R. SOUZA - RGPM 885.860</option>
+                <option value="SD PM SOUZA - RGPM 885.916">SD PM SOUZA - RGPM 885.916</option>
+                <option value="SD PM THIAGO - RGPM 886.613">SD PM THIAGO - RGPM 886.613</option>
+                <option value="SD PM BRUNA - RGPM 886.605">SD PM BRUNA - RGPM 886.605</option>
+                <option value="SD PM LOBO - RGPM 886.612">SD PM LOBO - RGPM 886.612</option>
+                <option value="SD PM VINHAS - RGPM 887.097">SD PM VINHAS - RGPM 887.097</option>
+                <option value="SD PM DOUGLAS - RGPM 887.192">SD PM DOUGLAS - RGPM 887.192</option>
+                <option value="Em branco">Em branco</option>
+            </select>
+        </div>
+        <div class="campo">
+            <label for="terceiro_homem">3º Homem:</label>
+
+            <select id="terceiro_homem" name="terceiro_homem">
+<option value="">Selecione...</option>
+                <option value="1ºSGT PM BRUNO - RGPM 880.298">1ºSGT PM BRUNO - RGPM 880.298</option>
+                <option value="2ºSGT PM BROLEZI - RGPM 882.309">2ºSGT PM BROLEZI - RGPM 882.309</option>
+                <option value="2ºSGT PM WEBER - RGPM 883.426">2ºSGT PM WEBER - RGPM 883.426</option>
+                <option value="3ºSGT PM CAMPOS - RGPM 886.601">3ºSGT PM CAMPOS - RGPM 886.601</option>
+                <option value="CB PM ROBERT - RGPM 885.812">CB PM ROBERT - RGPM 885.812</option>
+                <option value="CB PM JOSIMAR - RGPM 886.222">CB PM JOSIMAR - RGPM 886.222</option>
+                <option value="CB PM R. SOUZA - RGPM 885.860">CB PM R. SOUZA - RGPM 885.860</option>
+                <option value="SD PM SOUZA - RGPM 885.916">SD PM SOUZA - RGPM 885.916</option>
+                <option value="SD PM THIAGO - RGPM 886.613">SD PM THIAGO - RGPM 886.613</option>
+                <option value="SD PM BRUNA - RGPM 886.605">SD PM BRUNA - RGPM 886.605</option>
+                <option value="SD PM LOBO - RGPM 886.612">SD PM LOBO - RGPM 886.612</option>
+                <option value="SD PM VINHAS - RGPM 887.097">SD PM VINHAS - RGPM 887.097</option>
+                <option value="SD PM DOUGLAS - RGPM 887.192">SD PM DOUGLAS - RGPM 887.192</option>
+                <option value="Em branco">Em branco</option>
+            </select>
+        </div>
+        <div class="campo">
+            <label for="quarto_homem">4º Homem:</label>
+
+            <select id="quarto_homem" name="quarto_homem">
+<option value="">Selecione...</option>
+                <option value="1ºSGT PM BRUNO - RGPM 880.298">1ºSGT PM BRUNO - RGPM 880.298</option>
+                <option value="2ºSGT PM BROLEZI - RGPM 882.309">2ºSGT PM BROLEZI - RGPM 882.309</option>
+                <option value="2ºSGT PM WEBER - RGPM 883.426">2ºSGT PM WEBER - RGPM 883.426</option>
+                <option value="3ºSGT PM CAMPOS - RGPM 886.601">3ºSGT PM CAMPOS - RGPM 886.601</option>
+                <option value="CB PM ROBERT - RGPM 885.812">CB PM ROBERT - RGPM 885.812</option>
+                <option value="CB PM JOSIMAR - RGPM 886.222">CB PM JOSIMAR - RGPM 886.222</option>
+                <option value="CB PM R. SOUZA - RGPM 885.860">CB PM R. SOUZA - RGPM 885.860</option>
+                <option value="SD PM SOUZA - RGPM 885.916">SD PM SOUZA - RGPM 885.916</option>
+                <option value="SD PM THIAGO - RGPM 886.613">SD PM THIAGO - RGPM 886.613</option>
+                <option value="SD PM BRUNA - RGPM 886.605">SD PM BRUNA - RGPM 886.605</option>
+                <option value="SD PM LOBO - RGPM 886.612">SD PM LOBO - RGPM 886.612</option>
+                <option value="SD PM VINHAS - RGPM 887.097">SD PM VINHAS - RGPM 887.097</option>
+                <option value="SD PM DOUGLAS - RGPM 887.192">SD PM DOUGLAS - RGPM 887.192</option>
+                <option value="Em branco">Em branco</option>
+            </select>
+        </div>
+
+        <!-- Bloco 04 - Viatura e Dados de Abastecimento -->
+        <div class="coluna">
+            <div class="campo">
+                <label for="vtr">VTR:</label>
+                <select id="vtr" name="vtr">
+                    <option value="L200 SPC6I90">L200 SPC6I90</option>
+                    <option value="KICKS SPN9E23">KICKS SPN9E23</option>
+                </select>
+            </div>
+            <div class="campo">
+                <label for="km_inicial">KM Inicial:</label>
+                <input type="number" id="km_inicial" name="km_inicial" required title="Digite apenas números">
+
+            </div>
+            <div class="campo">
+                <label for="km_final">KM Final:</label>
+                <input type="number" id="km_final" name="km_final" required title="Digite apenas números">
+            </div>
+            <div class="campo">
+                <label for="abastecimento">Qtd de abastecimento em Litros:</label>
+                <input type="text" id="abastecimento" name="abastecimento" required maxlength="5" pattern="\d+(\.\d{1,2})?" title="Digite apenas números com até 5 casas decimais">
+            </div>
+            <div class="campo">
+                <label for="local_abastecimento">Local de Abastecimento:</label>
+                <input type="text" id="local_abastecimento" name="local_abastecimento">
+            </div>
+        </div>
+
+        <!-- Bloco 03 - Trânsito -->
+        <div class="campo">
+            <label for="ocorrencia">Ocorrência:</label>
+            <textarea id="ocorrencia" name="ocorrencia" rows="4">S/A</textarea>
+        </div>
+
+        <div class="campo">
+            <label for="tco_lavrados">TCO - LAVRADO:</label>
+            <textarea id="tco_lavrados" name="tco_lavrados" rows="4">S/A</textarea>
+        </div>
+
+        <div class="campo">
+            <label for="ARMAMENTO_APOIO">Material carga disponivel para o serviço:</label>
+            <textarea id="ARMAMENTO_APOIO" name="ARMAMENTO_APOIO" rows="4">S/A</textarea>
+        </div>
+
+        <div class="campo">
+            <label for="apreensao">Apreensões:</label>
+            <textarea id="apreensao" name="apreensao" rows="4">S/A</textarea>
+        </div>
+
+        <div class="campo">
+            <label for="notificacao">Notificações:</label>
+            <textarea id="notificacao" name="notificacao" rows="4">S/A</textarea>
+        </div>
+
+        <!-- Bloco 05 - Apresentações na Unidade Militar -->
+        <div class="campo">
+            <label for="apresentacoes_unidade">Apresentações na Unidade Militar:</label>
+            <textarea id="apresentacoes_unidade" name="apresentacoes_unidade" rows="4">S/A</textarea>
+        </div>
+
+        <!-- Bloco 06 - Observações -->
+        <div class="campo">
+            <label for="observacao">Observações do serviço:</label>
+            <textarea id="observacao" name="observacao" rows="4">S/A</textarea>
+        </div>
+
+        <!-- Bloco 08 - Passagem de Serviço -->
+        <div class="campo">
+            <label for="passagem_servico">Passo o serviço para o:</label>
+            <select id="passagem_servico" name="passagem_servico" required>
+                <option value="">Selecione...</option>
+                <option value="1ºSGT PM BRUNO - RGPM 880.298">1ºSGT PM BRUNO - RGPM 880.298</option>
+                <option value="2ºSGT PM BROLEZI - RGPM 882.309">2ºSGT PM BROLEZI - RGPM 882.309</option>
+                <option value="2ºSGT PM WEBER - RGPM 883.426">2ºSGT PM WEBER - RGPM 883.426</option>
+                <option value="3ºSGT PM CAMPOS - RGPM 886.601">3ºSGT PM CAMPOS - RGPM 886.601</option>
+                <option value="CB PM ROBERT - RGPM 885.812">CB PM ROBERT - RGPM 885.812</option>
+                <option value="CB PM JOSIMAR - RGPM 886.222">CB PM JOSIMAR - RGPM 886.222</option>
+                <option value="CB PM R. SOUZA - RGPM 885.860">CB PM R. SOUZA - RGPM 885.860</option>
+                <option value="SD PM SOUZA - RGPM 885.916">SD PM SOUZA - RGPM 885.916</option>
+                <option value="SD PM THIAGO - RGPM 886.613">SD PM THIAGO - RGPM 886.613</option>
+                <option value="SD PM BRUNA - RGPM 886.605">SD PM BRUNA - RGPM 886.605</option>
+                <option value="SD PM LOBO - RGPM 886.612">SD PM LOBO - RGPM 886.612</option>
+                <option value="SD PM VINHAS - RGPM 887.097">SD PM VINHAS - RGPM 887.097</option>
+                <option value="SD PM DOUGLAS - RGPM 887.192">SD PM DOUGLAS - RGPM 887.192</option>
+            </select>
+        </div>
+
+       
+
+    </form>
+
+    <script>
+        function calcularDataFinal() {
+            var dataInicial = document.getElementById("data_inicial").value;
+            if (dataInicial) {
+                var data = new Date(dataInicial);
+                data.setHours(data.getHours() + 24);
+                document.getElementById("data_final").value = data.toISOString();
+            }
+        }
+
+        function mostrarDescricaoFaxina(show) {
+            var descricaoFaxina = document.getElementById("descricao_faxina");
+            if (show) {
+                descricaoFaxina.style.display = "block";
+            } else {
+                descricaoFaxina.style.display = "none";
+            }
+        }
+
+        // Preenche automaticamente os campos com "S/A" ao carregar a página
+        window.onload = function() {
+            document.getElementById("ocorrencia").value = "S/A";
+            document.getElementById("apreensao").value = "S/A";
+            document.getElementById("notificacao").value = "S/A";
+            document.getElementById("apresentacoes_unidade").value = "Não Houve";
+            document.getElementById("observacao").value = "S/A";
+document.getElementById("local_abastecimento").value = "Não Houve";
+document.getElementById("ARMAMENTO_APOIO").value = "ARMAMENTO_APOIO: 01 GALGE CAL 12 Nº P-47761-FRANCHI; GALGE 12 NºC1575042S; 01 CARABINA 556 Imbel | MUNIÇÕES: 100 UNID CAL. 556 CBC, 50 UNID GALGE 12. LETAL E 12 ANTI-MOTIM";
+        };
+    </script>
+
+</body>
+</html>
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Gerar PDF - Livro Diário Núcleo de Policia Militar de Denise MT</title>
+  <style>
+    /* CSS para alinhamento dos campos agrupados (se você for exibir os campos em um container HTML, por exemplo) */
+    .field-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .field-group {
+      flex: 1; /* Distribui igualmente os campos da mesma linha */
+    }
+    /* Estilo opcional para inputs */
+    input[type="text"] {
+      width: 100%;
+      padding: 5px;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+<body>
+  <!-- Seu botão que dispara a geração do PDF -->
+  <button onclick="gerarPDF()">Gerar PDF</button>
+
+  <script>
+    function gerarPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // Cabeçalho centralizado e em negrito
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(12);
+        const headerX = 105; // Centralizado (largura da página / 2)
+        const headerY = 20;  // Posição inicial no eixo Y
+        const lineSpacing = 5; // Espaçamento mínimo entre as linhas
+        
+        doc.text("COMANDO REGIONAL VII - MÉDIO NORTE", headerX, headerY, { align: "center" });
+        doc.text("12ª CIPM - BARRA DO BUGRES", headerX, headerY + lineSpacing, { align: "center" });
+        doc.text("NPM - DENISE", headerX, headerY + lineSpacing * 2, { align: "center" });
+        
+        // Função para formatar datas para o padrão dd.mm.aaaa
+        function formatarData(dataStr) {
+            const data = new Date(dataStr);
+            const dia = String(data.getDate()).padStart(2, '0');
+            const mes = String(data.getMonth() + 1).padStart(2, '0');
+            const ano = data.getFullYear();
+            return `${dia}.${mes}.${ano}`;
+        }
+        
+        // Função para obter o dia da semana
+        function obterDiaSemana(dataStr) {
+            const dias = ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
+            const data = new Date(dataStr);
+            return dias[data.getDay()];
+        }
+        
+        // Obter os valores dos campos de data
+        const dataInicioRaw = document.getElementById("data_inicial").value;
+        const dataFimRaw = document.getElementById("data_final").value;
+        const dataInicio = formatarData(dataInicioRaw);
+        const dataFim = formatarData(dataFimRaw);
+        const diaSemanaInicio = obterDiaSemana(dataInicioRaw);
+        const diaSemanaFim = obterDiaSemana(dataFimRaw);
+        
+        // Primeiro bloco: SERVIÇO DO DIA ... com datas em negrito e centralizado
+        let y = headerY + lineSpacing * 4;
+        const blockX = 10;
+        const blockWidth = 190;
+        const blockMargin = 2; // margem interna para o texto
+        const fixedBlockHeight = 10;
+        
+        doc.rect(blockX, y, blockWidth, fixedBlockHeight);
+        
+        // Dividir o texto em partes para aplicar formatação diferenciada
+        const textPart1 = "SERVIÇO DO DIA ";
+        const textPart2 = dataInicio;
+        const textPart3 = " " + diaSemanaInicio + " PARA O DIA ";
+        const textPart4 = dataFim;
+        const textPart5 = " " + diaSemanaFim;
+        
+        // Calcular larguras das partes para centralizar
+        doc.setFont("helvetica", "normal");
+        let width1 = doc.getTextWidth(textPart1);
+        doc.setFont("helvetica", "bold");
+        let width2 = doc.getTextWidth(textPart2);
+        doc.setFont("helvetica", "normal");
+        let width3 = doc.getTextWidth(textPart3);
+        doc.setFont("helvetica", "bold");
+        let width4 = doc.getTextWidth(textPart4);
+        doc.setFont("helvetica", "normal");
+        let width5 = doc.getTextWidth(textPart5);
+        
+        let totalWidth = width1 + width2 + width3 + width4 + width5;
+        let startX = headerX - totalWidth / 2; // Início para centralizar
+        
+        let currentX = startX;
+        // Parte 1: normal
+        doc.setFont("helvetica", "normal");
+        doc.text(textPart1, currentX, y + 7);
+        currentX += width1;
+        // Parte 2: dataInicio em negrito
+        doc.setFont("helvetica", "bold");
+        doc.text(textPart2, currentX, y + 7);
+        currentX += width2;
+        // Parte 3: normal
+        doc.setFont("helvetica", "normal");
+        doc.text(textPart3, currentX, y + 7);
+        currentX += width3;
+        // Parte 4: dataFim em negrito
+        doc.setFont("helvetica", "bold");
+        doc.text(textPart4, currentX, y + 7);
+        currentX += width4;
+        // Parte 5: normal
+        doc.setFont("helvetica", "normal");
+        doc.text(textPart5, currentX, y + 7);
+        
+        y += fixedBlockHeight + 4;
+        
+        // Array de campos com a inclusão da propriedade sameRowGroup para agrupamentos múltiplos
+        const fields = [
+            { label: "*", title: "Recebi o serviço do: ", elementId: "recebimento_servico" },
+            //{ label: "*", title: "Faxina: ", elementId: "descricao_faxina" },
+            { label: "*", title: "Cmt de GU SV", elementId: "cmt_de_gu" },
+            { label: "*", title: "Motorista", elementId: "motorista" },
+            { label: "*", title: "3º Homem", elementId: "terceiro_homem" },
+            { label: "*", title: "4º Homem", elementId: "quarto_homem" },
+            // Grupo 1: Campos 6, 7, 8 e (exemplo)  --- nesse grupo os campos ficarão juntos
+            { label: "*", title: "VTR", elementId: "vtr", sameRowGroup: "group1" },
+            { label: "*", title: "KM Inicial", elementId: "km_inicial", sameRowGroup: "group1" },
+            { label: "*", title: "KM Final", elementId: "km_final", sameRowGroup: "group1" },
+            // Grupo 2: Campos 9 e 10 - agrupados em linha diferente
+            { label: "*", title: "Qtd de abastecimento em Litros", elementId: "abastecimento", sameRowGroup: "group2" },
+            { label: "*", title: "Local de Abastecimento", elementId: "local_abastecimento", sameRowGroup: "group2" },
+            // Campos individuais restantes
+            { label: "*", title: "Ocorrência", elementId: "ocorrencia" },
+            { label: "*", title: "TCO - Lavrado", elementId: "tco_lavrados" },
+            { label: "*", title: "Material carga disponivel para o serviço:", elementId: "ARMAMENTO_APOIO" },
+            { label: "*", title: "Apreensões", elementId: "apreensao" },
+            { label: "*", title: "Notificações", elementId: "notificacao" },
+            { label: "*", title: "Apresentações, Extraordinaria e Outros", elementId: "apresentacoes_unidade" },
+            { label: "*", title: "Observações", elementId: "observacao" },
+            // Campo custom: Passagem de Serviço, onde será concatenado o texto adicional
+            { label: "*", title: "Passagem de Serviço para o ", elementId: "passagem_servico", custom: true }
+        ];
+        
+        // Pré-processamento: agrupar os campos que possuem a propriedade sameRowGroup
+        const finalFields = [];
+        for (let i = 0; i < fields.length; i++) {
+            if (fields[i].sameRowGroup) {
+                let groupId = fields[i].sameRowGroup;
+                let groupArray = [fields[i]];
+                while (i + 1 < fields.length && fields[i + 1].sameRowGroup === groupId) {
+                    groupArray.push(fields[i + 1]);
+                    i++;
+                }
+                finalFields.push({ group: true, fields: groupArray });
+            } else {
+                finalFields.push(fields[i]);
+            }
+        }
+        
+        // Define o espaçamento de linha para o texto dentro dos blocos
+        const currentLineHeight = 6;
+        
+        // Renderização dos campos ou grupos
+        finalFields.forEach(item => {
+            if (item.group) {
+                // Renderiza o grupo de campos na mesma linha
+                const group = item.fields;
+                const numFields = group.length;
+                const subBlockWidth = blockWidth / numFields;
+                let maxHeight = 0;
+                // Processa cada campo do grupo para calcular a altura necessária
+                let subFieldsData = group.map(field => {
+                    let val = document.getElementById(field.elementId).value.trim();
+                    if (!val) return null; // Pula se vazio
+                    let fullText = `${field.label} | ${field.title}: ${val}`;
+                    let parts = fullText.split(": ");
+                    let labelPart = parts[0] + ": ";
+                    let answerPart = parts.slice(1).join(": ");
+                    doc.setFont("helvetica", "bold");
+                    let labelWidth = doc.getTextWidth(labelPart);
+                    doc.setFont("helvetica", "normal");
+                    let availableWidth = subBlockWidth - blockMargin * 2 - labelWidth;
+                    let answerLines = doc.splitTextToSize(answerPart, availableWidth);
+                    let dynamicBlockHeight = answerLines.length * currentLineHeight + 2;
+                    maxHeight = Math.max(maxHeight, dynamicBlockHeight);
+                    return { field, labelPart, answerLines, labelWidth };
+                }).filter(data => data !== null);
+                
+                // Desenha um retângulo para todo o grupo
+                doc.rect(blockX, y, blockWidth, maxHeight);
+                
+                // Renderiza cada campo dentro do grupo
+                subFieldsData.forEach((data, i) => {
+                    let subX = blockX + i * subBlockWidth;
+                    let textX = subX + blockMargin;
+                    let textY = y + currentLineHeight;
+                    doc.setFont("helvetica", "bold");
+                    doc.text(data.labelPart, textX, textY);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(data.answerLines[0], textX + data.labelWidth, textY);
+                    textY += currentLineHeight;
+                    let additionalLines = data.answerLines.slice(1);
+                    additionalLines.forEach(line => {
+                        doc.text(line, textX, textY);
+                        textY += currentLineHeight;
+                    });
+                });
+                y += maxHeight + 2;
+            } else if (item.custom) {
+                // Renderiza o campo custom ("Passagem de Serviço para o ...")
+                let val = document.getElementById(item.elementId).value.trim();
+                if (!val) return;  // Pula se vazio
+                // Aqui concatenamos o valor com o texto adicional desejado
+                let fullText = `${item.title}${val}; com todas as ordens em vigor e alterações anotadas.`;
+                const customLines = doc.splitTextToSize(fullText, blockWidth - blockMargin * 2);
+                const dynamicBlockHeight = customLines.length * currentLineHeight + 2;
+                doc.rect(blockX, y, blockWidth, dynamicBlockHeight);
+                doc.setFont("helvetica", "normal");
+                customLines.forEach((line, index) => {
+                    doc.text(line, blockX + blockMargin, y + currentLineHeight * (index + 1));
+                });
+                y += dynamicBlockHeight + 2;
+            } else {
+                // Renderiza campo individual
+                let val = document.getElementById(item.elementId).value.trim();
+                if (!val) return;  // Pula se vazio
+                let fullText = `${item.label} | ${item.title}: ${val}`;
+                let parts = fullText.split(": ");
+                let labelPart = parts[0] + ": ";
+                let answerPart = parts.slice(1).join(": ");
+                doc.setFont("helvetica", "bold");
+                let labelWidth = doc.getTextWidth(labelPart);
+                doc.setFont("helvetica", "normal");
+                let availableWidthFirst = blockWidth - blockMargin * 2 - labelWidth;
+                let answerLines = doc.splitTextToSize(answerPart, availableWidthFirst);
+                const dynamicBlockHeight = answerLines.length * currentLineHeight + 2;
+                doc.rect(blockX, y, blockWidth, dynamicBlockHeight);
+                let textY = y + currentLineHeight;
+                doc.setFont("helvetica", "bold");
+                doc.text(labelPart, blockX + blockMargin, textY);
+                doc.setFont("helvetica", "normal");
+                doc.text(answerLines[0], blockX + blockMargin + labelWidth, textY);
+                textY += currentLineHeight;
+                let additionalLines = answerLines.slice(1);
+                additionalLines.forEach(line => {
+                    doc.text(line, blockX + blockMargin, textY);
+                    textY += currentLineHeight;
+                });
+                y += dynamicBlockHeight + 2;
+            }
+        });
+        
+        // Adiciona os campos de assinatura
+        const pageHeight = doc.internal.pageSize.getHeight();
+        let sigY = pageHeight - 20;
+        doc.setFont("helvetica", "bold");
+    
+        doc.text("CMT DO NPM", doc.internal.pageSize.getWidth() - 10, sigY, { align: "right" });
+        doc.text("____________", doc.internal.pageSize.getWidth() - 10, sigY - 6, { align: "right" });
+        doc.text("VISTO EM __/___/____", doc.internal.pageSize.getWidth() - 10, sigY + 6, { align: "right" });
+        
+        
+       // doc.text("GUSTAVO ROBERT DE OLIVEIRA - CB PMMT", doc.internal.pageSize.getWidth() - 65, sigY - 12, { align: "right" });
+        doc.text("_________________________________________", doc.internal.pageSize.getWidth() - 65, sigY - 19, { align: "right" });
+        ///doc.text(cmt_de_gu.value, headerX, headerY + lineSpacing * 2, { align: "center" });
+        ///doc.text("GRADUADO DE DIA", headerX, headerY + lineSpacing * 2, { align: "center" });
+     doc.text(cmt_de_gu.value, doc.internal.pageSize.getWidth() - 70, sigY - 12, { align: "right" });
+        doc.text("GRADUADO DE DIA", doc.internal.pageSize.getWidth() - 90, sigY - 6, { align: "right" });
+        // Salva o arquivo PDF, incluindo a data de início no nome
+        doc.save("Livro_Diario_NPM_Denise_" + dataInicio + ".pdf");
+    }
+  </script>
+</body>
+</html>
+
+
+
+
+
