@@ -1,622 +1,1405 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
+  <!DOCTYPE html>
+  <html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Gestor de Unidade Militar</title>
+  <!--  <link rel="stylesheet" href="estilo.css">-->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 
-    <!-- Importa a biblioteca jsPDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- stilos copiados de fora pra dentro-->
+  <style>
+    /* === LOGIN === */
+  #login-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+
+  #login-box {
+    background: #fff;
+    padding: 30px 40px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    width: 320px;
+    text-align: center;
+    font-family: 'Roboto', sans-serif;
+  }
+
+  #login-box h2 {
+    margin-bottom: 20px;
+  }
+
+  #login-box input[type="text"],
+  #login-box input[type="password"] {
+    width: 100%;
+    padding: 12px 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+  }
+
+  #login-box button {
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+  }
+
+  #login-box button:hover {
+    background-color: #0056b3;
+  }
+
+  #login-error {
+    color: red;
+    margin-bottom: 15px;
+    min-height: 20px;
+  }
+
+  /* BLOQUEIO DO CONTEÚDO QUANDO NÃO LOGADO */
+  body.locked header,
+  body.locked main,
+  body.locked footer {
+    filter: blur(2px);
+    pointer-events: none;
+    user-select: none;
+    opacity: 0.5;
+  }
+
+  /* BOTÃO SAIR */
+  #logout-btn {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    z-index: 1000;
+    display: none;
+  }
+
+  #logout-btn:hover {
+    background: #b02a37;
+  }
 
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nucleo de Policia Militar de Denise -Formulário de Serviço</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f9;
-            color: #333;
-        }
-        h1 {
-            text-align: center;
-            font-size: 24px;
-            color: #4CAF50;
-        }
-        label {
-            font-weight: bold;
-            color: #333;
-        }
-        .campo {
-            margin-bottom: 15px;
-            width: 100%;
-        }
-        input[type="text"], input[type="date"], input[type="time"], select, textarea {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            font-size: 14px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #fff;
-        }
-        .campo select, .campo input[type="datetime-local"] {
-            background-color: #f9f9f9;
-        }
-        .campo textarea {
-            font-family: Arial, sans-serif;
-            resize: vertical;
-        }
-        .coluna {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .coluna div {
-            width: 22%; /* Ajustado para manter os campos na mesma linha */
-        }
-        .coluna div input,
-        .coluna div select {
-            width: 90%; /* Para deixar os campos mais compactos */
-        }
-        .coluna div label {
-            font-size: 12px;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 12px 20px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 20px;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
+  /* === GERAL === */
+  body {
+    font-family: 'Roboto', Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    margin: 0;
+    padding: 0;
+  }
 
-        /* Melhorias para dispositivos móveis */
-        @media (max-width: 768px) {
-            .coluna div {
-                width: 100%;
-            }
-            h1 {
-                font-size: 20px;
-            }
-        }
-    </style>
-</head>
-<body>
+  header {
+    background-color: #0077cc;
+    color: white;
+    padding: 20px;
+    text-align: center;
+  }
 
-    <h1>LIVRO DIARIO NPM DENISE </h1>
+  header h1 {
+    margin: 0;
+  }
 
-    <form action="#" method="post">
+  .navbar {
+    position: relative;
+  }
 
-        <!-- Bloco 01 - Dados Gerais -->
-        <div class="campo">
-            <label for="data_inicial">Data Inicial do Serviço e Hora:</label>
-            <input type="datetime-local" id="data_inicial" name="data_inicial" required onchange="">
-        </div>
-        <div class="campo">
-           <label for="data_final">Data Final do Serviço e Hora:</label>
-           <input type="datetime-local" id="data_final" name="data_final" required onchange="">
-        </div>
+  .menu-toggle {
+    display: none;
+    font-size: 28px;
+    cursor: pointer;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+  }
 
-        <div class="campo">
-            <label for="recebimento_servico">Recebio o Serviço do:</label>
-            <select id="recebimento_servico" name="recebimento_servico" required>
-                <option value="">Selecione...</option>
-                <option value="1ºSGT PM BRUNO - RGPM 880.298">1ºSGT PM BRUNO - RGPM 880.298</option>
-                <option value="2ºSGT PM BROLEZI - RGPM 882.309">2ºSGT PM BROLEZI - RGPM 882.309</option>
-                <option value="2ºSGT PM WEBER - RGPM 883.426">2ºSGT PM WEBER - RGPM 883.426</option>
-                <option value="3ºSGT PM CAMPOS - RGPM 886.601">3ºSGT PM CAMPOS - RGPM 886.601</option>
-                <option value="CB PM ROBERT - RGPM 885.812">CB PM ROBERT - RGPM 885.812</option>
-                <option value="CB PM JOSIMAR - RGPM 886.222">CB PM JOSIMAR - RGPM 886.222</option>
-                <option value="CB PM R. SOUZA - RGPM 885.860">CB PM R. SOUZA - RGPM 885.860</option>
-                <option value="SD PM SOUZA - RGPM 885.916">SD PM SOUZA - RGPM 885.916</option>
-                <option value="SD PM THIAGO - RGPM 886.613">SD PM THIAGO - RGPM 886.613</option>
-                <option value="SD PM BRUNA - RGPM 886.605">SD PM BRUNA - RGPM 886.605</option>
-                <option value="SD PM LOBO - RGPM 886.612">SD PM LOBO - RGPM 886.612</option>
-                <option value="SD PM VINHAS - RGPM 887.097">SD PM VINHAS - RGPM 887.097</option>
-                <option value="SD PM DOUGLAS - RGPM 887.192">SD PM DOUGLAS - RGPM 887.192</option>
+  .nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0 0 0;
+  }
+
+  .nav-list li {
+    display: inline-block;
+    margin: 0 10px;
+  }
+
+  .nav-list li a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  main {
+    max-width: 1000px;
+    margin: 30px auto 80px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+
+  button {
+    background-color: #0077cc;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  button:hover {
+    background-color: #005fa3;
+  }
+
+  footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 15px;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+  }
+
+  .content {
+    display: none;
+  }
+
+  .content.active {
+    display: block;
+  }
+
+
+  /* === FORMULÁRIOS === */
+  form {
+    max-width: 600px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+
+  input[type="text"],
+  input[type="date"],
+  input[type="number"],
+  textarea {
+    width: 100%;
+    padding: 8px 10px;
+    margin: 5px 0 15px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 14px;
+  }
+
+  textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
+
+  form button {
+    background-color: #0077cc;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 15px;
+  }
+
+  form button:hover {
+    background-color: #005fa3;
+  }
+
+
+  /* === RESPONSIVO === */
+  @media (max-width: 768px) {
+    .menu-toggle {
+      display: block;
+    }
+
+    .nav-list {
+      display: none;
+      flex-direction: column;
+      background-color: #0077cc;
+      position: absolute;
+      width: 100%;
+      top: 60px;
+      left: 0;
+      text-align: center;
+    }
+
+    .nav-list.active {
+      display: flex;
+    }
+
+    .nav-list li {
+      display: block;
+      margin: 10px 0;
+    }
+
+    .form-buttons {
+      margin-top: 10px;
+    }
+
+    .form-buttons button {
+      margin-right: 10px;
+      margin-bottom: 5px;
+    }
+  }
+
+  </style>
+  <!-- fim do stilos-->
+ <!-- Carrega a biblioteca jsPDF (UMD) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous"></script>
+
+  </head>
+
+
+
+
+
+
+
+  <body class="locked">
+
+
+
+
+    
+    <!-- Overlay de Login -->
+    <div id="login-overlay">
+      <div id="login-box">
+        <h2>Login do Sistema</h2>
+        <div id="login-error"></div>
+        <input type="text" id="login-user" placeholder="Usuário" autocomplete="off" />
+        <input type="password" id="login-pass" placeholder="Senha" autocomplete="off" />
+        <button onclick="fazerLogin()">Entrar</button>
+      </div>
+    </div>
+
+    <button id="logout-btn" onclick="logout()">Sair</button>
+
+    <header>
+      <h1>Gestor de Unidade Militar</h1>
+      <nav class="navbar">
+        <div class="menu-toggle" id="mobile-menu">&#9776;</div>
+        <ul class="nav-list">
+          <li><a href="#" data-section="inicio">Início</a></li>
+          <li><a href="#" data-section="livrodiario">Livro Diario</a></li>
+          <li><a href="#" data-section="unidade">Unidade Militar</a></li>
+          <li><a href="#" data-section="efetivo">Efetivo</a></li>
+          <li><a href="#" data-section="viaturas">Viaturas</a></li>
+          <li><a href="#" data-section="material">Material Bélico</a></li>
+          <li><a href="#" data-section="escala_ord">Escala Ordinária</a></li>
+          <li><a href="#" data-section="escala_ext">Escala Extraordinária</a></li>
+  <!--        <li><a href="#" data-section="atividade">Atividade Externa</a></li>
+          <li><a href="#" data-section="audiencia">Audiência</a></li> -->
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+
+
+
+      
+      <!-- Conteúdo das seções -->
+      <section id="inicio" class="content active">
+        <h2>Início</h2>
+        <p>Bem-vindo ao sistema de gestão de Unidade Militar.</p>
+      </section>
+
+      <section id="livrodiario" class="content">
+        <h2>NUCLEO DE POLICIA MILITAR DE DENISE</h2>
+        <p>Gerador de livro de serviço diário... Em teste...</p>
+
+        <form>
+            
+          <div>
+          <div style="display:flex; gap:20px;">
+    <div style="flex:1;">
+
+            <label for="data_inicio">Serviço do dia</label>
+            <input type="date" id="data_inicio" name="data_inicio">
+          </div>
+
+    <div style="flex:1;">
+
+            
+            <label for="data_fim">Para o dia</label>
+            <input type="date" id="data_fim" name="data_fim">
+          </div>
+          
+            <div style="flex:1;">
+            
+            <label for="datalivro">Impresso em</label>
+            <input type="date" id="datalivro" name="datalivro">
+          </div>
+  </div>
+          
+  <div>
+        <label for="recebi_servico">Recebi o serviço do</label>
+        <select id="recebi_servico" name="recebi_servico" class="lista-militares">
+          <option value="">Selecione...</option>
+        </select>
+      </div>
+
+      <div>
+        <div style="display:flex; gap:20px;">
+    <div style="flex:1;">
+        <label for="cmt_sv">Cmt de GU SV</label>
+        <select id="cmt_sv" name="cmt_sv" class="lista-militares">
+          <option value="">Selecione...</option>
+F        </select>
+      </div>
+
+      <div style="flex:1;">
+        <label for="motorista">Motorista</label>
+        <select id="motorista" name="motorista" class="lista-militares">
+          <option value="">Selecione...</option>
+        </select>
+      </div>
+  </div>
+
+          <div>
+            <div style="display:flex; gap:20px;">
+              <div style="flex:1;">
+        <label for="3HOMEM">3º HOMEM</label>
+        <select id="3HOMEM" name="3HOMEM" class="lista-militares">
+          <option value="">Selecione...</option>
+        </select>
+      </div>
+
+          <div style="flex:1;">
+        <label for="4HOMEM">4º HOMEM</label>
+        <select id="4HOMEM" name="4HOMEM" class="lista-militares">
+          <option value="">Selecione...</option>
+        </select>
+      </div>
+  </div>
+  <br>
+          <div>
+            <div style="display:flex; gap:20px;">
+    <div style="flex:1;">
+            <label for="vtr">VTR</label>
+            <select id="vtr" name="vtr">
+              <option value="">Selecione...</option>
+              <option value="KICKS SPN9E23">KICKS SPN9E23</option>
+              <option value="l200 SPC7E90">L200 SPC7E90</option>
             </select>
-        </div>
+          </div>
 
         
-        <!-- Bloco 02 - Homens do Serviço -->
-        <div class="campo">
-            <label for="cmt_de_gu">CMT DE GU SV:</label>
-            <select id="cmt_de_gu" name="cmt_de_gu">
-<option value="">Selecione...</option>
-                <option value="1ºSGT PM BRUNO - RGPM 880.298">1ºSGT PM BRUNO - RGPM 880.298</option>
-                <option value="2ºSGT PM BROLEZI - RGPM 882.309">2ºSGT PM BROLEZI - RGPM 882.309</option>
-                <option value="2ºSGT PM WEBER - RGPM 883.426">2ºSGT PM WEBER - RGPM 883.426</option>
-                <option value="3ºSGT PM CAMPOS - RGPM 886.601">3ºSGT PM CAMPOS - RGPM 886.601</option>
-                <option value="CB PM ROBERT - RGPM 885.812">CB PM ROBERT - RGPM 885.812</option>
-                <option value="CB PM JOSIMAR - RGPM 886.222">CB PM JOSIMAR - RGPM 886.222</option>
-                <option value="CB PM R. SOUZA - RGPM 885.860">CB PM R. SOUZA - RGPM 885.860</option>
-                <option value="SD PM SOUZA - RGPM 885.916">SD PM SOUZA - RGPM 885.916</option>
-                <option value="SD PM THIAGO - RGPM 886.613">SD PM THIAGO - RGPM 886.613</option>
-                <option value="SD PM BRUNA - RGPM 886.605">SD PM BRUNA - RGPM 886.605</option>
-                <option value="SD PM LOBO - RGPM 886.612">SD PM LOBO - RGPM 886.612</option>
-                <option value="SD PM VINHAS - RGPM 887.097">SD PM VINHAS - RGPM 887.097</option>
-                <option value="SD PM DOUGLAS - RGPM 887.192">SD PM DOUGLAS - RGPM 887.192</option>
-                <option value="Em branco">Em branco</option>
-            </select>
-        </div>
-        <div class="campo">
-            <label for="motorista">Motorista:</label>
-            <select id="motorista" name="motorista">
-<option value="">Selecione...</option>
-                <option value="1ºSGT PM BRUNO - RGPM 880.298">1ºSGT PM BRUNO - RGPM 880.298</option>
-                <option value="2ºSGT PM BROLEZI - RGPM 882.309">2ºSGT PM BROLEZI - RGPM 882.309</option>
-                <option value="2ºSGT PM WEBER - RGPM 883.426">2ºSGT PM WEBER - RGPM 883.426</option>
-                <option value="3ºSGT PM CAMPOS - RGPM 886.601">3ºSGT PM CAMPOS - RGPM 886.601</option>
-                <option value="CB PM ROBERT - RGPM 885.812">CB PM ROBERT - RGPM 885.812</option>
-                <option value="CB PM JOSIMAR - RGPM 886.222">CB PM JOSIMAR - RGPM 886.222</option>
-                <option value="CB PM R. SOUZA - RGPM 885.860">CB PM R. SOUZA - RGPM 885.860</option>
-                <option value="SD PM SOUZA - RGPM 885.916">SD PM SOUZA - RGPM 885.916</option>
-                <option value="SD PM THIAGO - RGPM 886.613">SD PM THIAGO - RGPM 886.613</option>
-                <option value="SD PM BRUNA - RGPM 886.605">SD PM BRUNA - RGPM 886.605</option>
-                <option value="SD PM LOBO - RGPM 886.612">SD PM LOBO - RGPM 886.612</option>
-                <option value="SD PM VINHAS - RGPM 887.097">SD PM VINHAS - RGPM 887.097</option>
-                <option value="SD PM DOUGLAS - RGPM 887.192">SD PM DOUGLAS - RGPM 887.192</option>
-                <option value="Em branco">Em branco</option>
-            </select>
-        </div>
-        <div class="campo">
-            <label for="terceiro_homem">3º Homem:</label>
+    <div style="flex:1;">
+      <label for="km_inicial">KM Inicial</label>
+      <input type="number" id="km_inicial" name="km_inicial">
+    </div>
 
-            <select id="terceiro_homem" name="terceiro_homem">
-<option value="">Selecione...</option>
-                <option value="1ºSGT PM BRUNO - RGPM 880.298">1ºSGT PM BRUNO - RGPM 880.298</option>
-                <option value="2ºSGT PM BROLEZI - RGPM 882.309">2ºSGT PM BROLEZI - RGPM 882.309</option>
-                <option value="2ºSGT PM WEBER - RGPM 883.426">2ºSGT PM WEBER - RGPM 883.426</option>
-                <option value="3ºSGT PM CAMPOS - RGPM 886.601">3ºSGT PM CAMPOS - RGPM 886.601</option>
-                <option value="CB PM ROBERT - RGPM 885.812">CB PM ROBERT - RGPM 885.812</option>
-                <option value="CB PM JOSIMAR - RGPM 886.222">CB PM JOSIMAR - RGPM 886.222</option>
-                <option value="CB PM R. SOUZA - RGPM 885.860">CB PM R. SOUZA - RGPM 885.860</option>
-                <option value="SD PM SOUZA - RGPM 885.916">SD PM SOUZA - RGPM 885.916</option>
-                <option value="SD PM THIAGO - RGPM 886.613">SD PM THIAGO - RGPM 886.613</option>
-                <option value="SD PM BRUNA - RGPM 886.605">SD PM BRUNA - RGPM 886.605</option>
-                <option value="SD PM LOBO - RGPM 886.612">SD PM LOBO - RGPM 886.612</option>
-                <option value="SD PM VINHAS - RGPM 887.097">SD PM VINHAS - RGPM 887.097</option>
-                <option value="SD PM DOUGLAS - RGPM 887.192">SD PM DOUGLAS - RGPM 887.192</option>
-                <option value="Em branco">Em branco</option>
-            </select>
-        </div>
-        <div class="campo">
-            <label for="quarto_homem">4º Homem:</label>
+    <div style="flex:1;">
+      <label for="km_final">KM Final</label>
+      <input type="number" id="km_final" name="km_final">
+    </div>
+    <div>
+            <label for="abastecimento">Qtd de abastecimento em Litros</label>
+            <input type="number" id="abastecimento" name="abastecimento">
+          </div>
 
-            <select id="quarto_homem" name="quarto_homem">
-<option value="">Selecione...</option>
-                <option value="1ºSGT PM BRUNO - RGPM 880.298">1ºSGT PM BRUNO - RGPM 880.298</option>
-                <option value="2ºSGT PM BROLEZI - RGPM 882.309">2ºSGT PM BROLEZI - RGPM 882.309</option>
-                <option value="2ºSGT PM WEBER - RGPM 883.426">2ºSGT PM WEBER - RGPM 883.426</option>
-                <option value="3ºSGT PM CAMPOS - RGPM 886.601">3ºSGT PM CAMPOS - RGPM 886.601</option>
-                <option value="CB PM ROBERT - RGPM 885.812">CB PM ROBERT - RGPM 885.812</option>
-                <option value="CB PM JOSIMAR - RGPM 886.222">CB PM JOSIMAR - RGPM 886.222</option>
-                <option value="CB PM R. SOUZA - RGPM 885.860">CB PM R. SOUZA - RGPM 885.860</option>
-                <option value="SD PM SOUZA - RGPM 885.916">SD PM SOUZA - RGPM 885.916</option>
-                <option value="SD PM THIAGO - RGPM 886.613">SD PM THIAGO - RGPM 886.613</option>
-                <option value="SD PM BRUNA - RGPM 886.605">SD PM BRUNA - RGPM 886.605</option>
-                <option value="SD PM LOBO - RGPM 886.612">SD PM LOBO - RGPM 886.612</option>
-                <option value="SD PM VINHAS - RGPM 887.097">SD PM VINHAS - RGPM 887.097</option>
-                <option value="SD PM DOUGLAS - RGPM 887.192">SD PM DOUGLAS - RGPM 887.192</option>
-                <option value="Em branco">Em branco</option>
-            </select>
-        </div>
+  </div>
+        
+          <div>
+            <label for="local_abastecimento">Local de Abastecimento</label>
+            <input type="text" id="local_abastecimento" name="local_abastecimento">
+          </div>
 
-        <!-- Bloco 04 - Viatura e Dados de Abastecimento -->
-        <div class="coluna">
-            <div class="campo">
-                <label for="vtr">VTR:</label>
-                <select id="vtr" name="vtr">
-                    <option value="L200 SPC6I90">L200 SPC6I90</option>
-                    <option value="KICKS SPN9E23">KICKS SPN9E23</option>
-                </select>
-            </div>
-            <div class="campo">
-                <label for="km_inicial">KM Inicial:</label>
-                <input type="number" id="km_inicial" name="km_inicial" required title="Digite apenas números">
+          <div>
+            <label for="ocorrencia">Ocorrência</label>
+            <textarea id="ocorrencia" name="ocorrencia"></textarea>
+          </div>
 
-            </div>
-            <div class="campo">
-                <label for="km_final">KM Final:</label>
-                <input type="number" id="km_final" name="km_final" required title="Digite apenas números">
-            </div>
-            <div class="campo">
-                <label for="abastecimento">Qtd de abastecimento em Litros:</label>
-                <input type="text" id="abastecimento" name="abastecimento" required maxlength="5" pattern="\d+(\.\d{1,2})?" title="Digite apenas números com até 5 casas decimais">
-            </div>
-            <div class="campo">
-                <label for="local_abastecimento">Local de Abastecimento:</label>
-                <input type="text" id="local_abastecimento" name="local_abastecimento">
-            </div>
-        </div>
+          <div>
+            <label for="tco">TCO - Lavrado</label>
+            <textarea id="tco" name="tco"></textarea>
+          </div>
 
-        <!-- Bloco 03 - Trânsito -->
-        <div class="campo">
-            <label for="ocorrencia">Ocorrência:</label>
-            <textarea id="ocorrencia" name="ocorrencia" rows="4">S/A</textarea>
-        </div>
+          <div>
+           <div style="display: flex; align-items: center; gap: 10px;">
+  <label for="material">Material carga disponível para o serviço</label>
+  <button type="button" id="reset-material">Resetar Material Original Config....</button>
+</div>
+            <textarea id="material" name="material">
+02 ESPINGARDA GALGE CAL 12, COM 50 MUNIÇÕES LETAIS E 33 MUNIÇÕES ANTI-MOTIN. 01 FUZIL CALIBRE 556, COM 100 MUNIÇÕES, 01 FUZIL CALIBRE 300 BLK COM 250 MUNIÇÕES. 01 ESPARGIDOR DE PIMENTA. 01 PISTOLA TESAR COM DOIS DARDOS. 05 RADIO PORTATIL HT E 10 CONES DE SINALIZAÇÃO.
+</textarea>
 
-        <div class="campo">
-            <label for="tco_lavrados">TCO - LAVRADO:</label>
-            <textarea id="tco_lavrados" name="tco_lavrados" rows="4">S/A</textarea>
-        </div>
 
-        <div class="campo">
-            <label for="ARMAMENTO_APOIO">Material carga disponivel para o serviço:</label>
-            <textarea id="ARMAMENTO_APOIO" name="ARMAMENTO_APOIO" rows="4">S/A</textarea>
-        </div>
+          </div>
 
-        <div class="campo">
-            <label for="apreensao">Apreensões:</label>
-            <textarea id="apreensao" name="apreensao" rows="4">S/A</textarea>
-        </div>
+          <div>
+            <label for="apreensoes">Apreensões</label>
+            <textarea id="apreensoes" name="apreensoes"></textarea>
+          </div>
 
-        <div class="campo">
-            <label for="notificacao">Notificações:</label>
-            <textarea id="notificacao" name="notificacao" rows="4">S/A</textarea>
-        </div>
+          <div>
+            <label for="notificacoes">Notificações</label>
+            <textarea id="notificacoes" name="notificacoes"></textarea>
+          </div>
 
-        <!-- Bloco 05 - Apresentações na Unidade Militar -->
-        <div class="campo">
-            <label for="apresentacoes_unidade">Apresentações na Unidade Militar:</label>
-            <textarea id="apresentacoes_unidade" name="apresentacoes_unidade" rows="4">S/A</textarea>
-        </div>
+          <div>
+            <label for="apresentacoes">Apresentações, Extraordinária e Outros</label>
+            <textarea id="apresentacoes" name="apresentacoes"></textarea>
+          </div>
 
-        <!-- Bloco 06 - Observações -->
-        <div class="campo">
-            <label for="observacao">Observações do serviço:</label>
-            <textarea id="observacao" name="observacao" rows="4">S/A</textarea>
-        </div>
+          <div>
+            <label for="observacoes">Observações</label>
+            <textarea id="observacoes" name="observacoes"></textarea>
+          </div>
 
-        <!-- Bloco 08 - Passagem de Serviço -->
-        <div class="campo">
-            <label for="passagem_servico">Passo o serviço para o:</label>
-            <select id="passagem_servico" name="passagem_servico" required>
-                <option value="">Selecione...</option>
-                <option value="1ºSGT PM BRUNO - RGPM 880.298">1ºSGT PM BRUNO - RGPM 880.298</option>
-                <option value="2ºSGT PM BROLEZI - RGPM 882.309">2ºSGT PM BROLEZI - RGPM 882.309</option>
-                <option value="2ºSGT PM WEBER - RGPM 883.426">2ºSGT PM WEBER - RGPM 883.426</option>
-                <option value="3ºSGT PM CAMPOS - RGPM 886.601">3ºSGT PM CAMPOS - RGPM 886.601</option>
-                <option value="CB PM ROBERT - RGPM 885.812">CB PM ROBERT - RGPM 885.812</option>
-                <option value="CB PM JOSIMAR - RGPM 886.222">CB PM JOSIMAR - RGPM 886.222</option>
-                <option value="CB PM R. SOUZA - RGPM 885.860">CB PM R. SOUZA - RGPM 885.860</option>
-                <option value="SD PM SOUZA - RGPM 885.916">SD PM SOUZA - RGPM 885.916</option>
-                <option value="SD PM THIAGO - RGPM 886.613">SD PM THIAGO - RGPM 886.613</option>
-                <option value="SD PM BRUNA - RGPM 886.605">SD PM BRUNA - RGPM 886.605</option>
-                <option value="SD PM LOBO - RGPM 886.612">SD PM LOBO - RGPM 886.612</option>
-                <option value="SD PM VINHAS - RGPM 887.097">SD PM VINHAS - RGPM 887.097</option>
-                <option value="SD PM DOUGLAS - RGPM 887.192">SD PM DOUGLAS - RGPM 887.192</option>
-            </select>
-        </div>
+          <div>
+        <label for="passagem_select">Passagem de Serviço</label>
+        <select id="passagem_select" name="passagem_select" class="lista-militares">
+          <option value="">Selecione...</option>
+        </select>
+      </div>
 
-       
 
-    </form>
+      <div>
+            <label for="passagem_texto">Passagem de serviço</label>
+            <textarea id="passagem_texto" name="passagem_texto"></textarea>
+          </div>
 
-    <script>
-        function calcularDataFinal() {
-            var dataInicial = document.getElementById("data_inicial").value;
-            if (dataInicial) {
-                var data = new Date(dataInicial);
-                data.setHours(data.getHours() + 24);
-                document.getElementById("data_final").value = data.toISOString();
-            }
-        }
+  <script>
+    // Evento para preencher o textarea quando selecionar um militar
+    document.getElementById("passagem_select").addEventListener("change", function () {
+      const selecionado = this.options[this.selectedIndex].text; // pega o texto visível do select
+      if (selecionado) {
+        document.getElementById("passagem_texto").value =
+          `Passo o serviço ao ${selecionado}, com todas as ordens em vigor e alterações anotadas!`;
+      } else {
+        document.getElementById("passagem_texto").value = "";
+      }
+    });
+  </script>
 
-        function mostrarDescricaoFaxina(show) {
-            var descricaoFaxina = document.getElementById("descricao_faxina");
-            if (show) {
-                descricaoFaxina.style.display = "block";
-            } else {
-                descricaoFaxina.style.display = "none";
-            }
-        }
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const materialEl = document.getElementById('material');
+    const resetBtn = document.getElementById('reset-material');
 
-        // Preenche automaticamente os campos com "S/A" ao carregar a página
-        window.onload = function() {
-            document.getElementById("ocorrencia").value = "S/A";
-            document.getElementById("apreensao").value = "S/A";
-            document.getElementById("notificacao").value = "S/A";
-            document.getElementById("apresentacoes_unidade").value = "Não Houve";
-            document.getElementById("observacao").value = "S/A";
-document.getElementById("local_abastecimento").value = "Não Houve";
-document.getElementById("ARMAMENTO_APOIO").value = "ARMAMENTO_APOIO: 01 GALGE CAL 12 Nº P-47761-FRANCHI; GALGE 12 NºC1575042S; 01 CARABINA 556 Imbel | MUNIÇÕES: 100 UNID CAL. 556 CBC, 50 UNID GALGE 12. LETAL E 12 ANTI-MOTIM";
-        };
-    </script>
+    // Armazenar o valor original ao carregar a página
+    const valorOriginalMaterial = materialEl.textContent.trim();
 
-</body>
-</html>
+    resetBtn.addEventListener('click', () => {
+      if (confirm("Deseja restaurar o texto original do campo MATERIAL?")) {
+        materialEl.value = valorOriginalMaterial;
+
+        // Atualiza o localStorage também (se você estiver usando store automático)
+        const storageKey = "form_livrodiario";
+        const dadosSalvos = JSON.parse(localStorage.getItem(storageKey) || '{}');
+        dadosSalvos['material'] = valorOriginalMaterial;
+        localStorage.setItem(storageKey, JSON.stringify(dadosSalvos));
+      }
+    });
+  });
+</script>
+
+
+
+
+  <br>
+         <!-- <button type="submit">Salvar</button>-->
 
 
 
 
 
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <title>Gerar PDF - Livro Diário Núcleo de Policia Militar de Denise MT</title>
-  <style>
-    /* CSS para alinhamento dos campos agrupados (se você for exibir os campos em um container HTML, por exemplo) */
-    .field-row {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-    .field-group {
-      flex: 1; /* Distribui igualmente os campos da mesma linha */
-    }
-    /* Estilo opcional para inputs */
-    input[type="text"] {
-      width: 100%;
-      padding: 5px;
-      box-sizing: border-box;
-    }
-  </style>
-</head>
-<body>
-  <!-- Seu botão que dispara a geração do PDF -->
+
+
+
+
+<!--COMEÇO PDF                                               PDF -->
+
+<h1>Gerar o livro em PDFF</h1>
+
   <button onclick="gerarPDF()">Gerar PDF</button>
+
+  <br>
+  <br>
+
+
 
   <script>
     function gerarPDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        
-        // Cabeçalho centralizado e em negrito
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(12);
-        const headerX = 105; // Centralizado (largura da página / 2)
-        const headerY = 20;  // Posição inicial no eixo Y
-        const lineSpacing = 5; // Espaçamento mínimo entre as linhas
-        
-        doc.text("COMANDO REGIONAL VII - MÉDIO NORTE", headerX, headerY, { align: "center" });
-        doc.text("12ª CIPM - BARRA DO BUGRES", headerX, headerY + lineSpacing, { align: "center" });
-        doc.text("NPM - DENISE", headerX, headerY + lineSpacing * 2, { align: "center" });
-        
-        // Função para formatar datas para o padrão dd.mm.aaaa
-        function formatarData(dataStr) {
-            const data = new Date(dataStr);
-            const dia = String(data.getDate()).padStart(2, '0');
-            const mes = String(data.getMonth() + 1).padStart(2, '0');
-            const ano = data.getFullYear();
-            return `${dia}.${mes}.${ano}`;
+      // Checa se a lib carregou
+      if (!window.jspdf || !window.jspdf.jsPDF) {
+        alert("Falha ao carregar jsPDF. Verifique a conexão ou o script de importação.");
+        return;
+      }
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF("p", "mm", "a4");
+
+      // Cabeçalho
+        function adicionarCabecalho() {
+                const img = new Image();
+            img.src = 'https://upload.wikimedia.org/wikipedia/commons/7/7f/Bras%C3%A3o_PMMT.PNG';
+            doc.addImage(img, 'PNG', 93, 5, 20, 20);
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(12);
+
+      doc.text("POLÍCIA MILITAR DO ESTADO DE MATO GROSSO", 105, 30, { align: "center" });
+      doc.text("COMANDO REGIONAL VII - MÉDIO NORTE", 105, 35, { align: "center" });
+      doc.text("12ª CIPM - BARRA DO BUGRES", 105, 40, { align: "center" });
+      doc.text("NUCLEO DE POLICIA MILITAR DE DENISE", 105, 45, { align: "center" });
+     
+
         }
-        
-        // Função para obter o dia da semana
-        function obterDiaSemana(dataStr) {
-            const dias = ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
-            const data = new Date(dataStr);
-            return dias[data.getDay()];
-        }
-        
-        // Obter os valores dos campos de data
-        const dataInicioRaw = document.getElementById("data_inicial").value;
-        const dataFimRaw = document.getElementById("data_final").value;
-        const dataInicio = formatarData(dataInicioRaw);
-        const dataFim = formatarData(dataFimRaw);
-        const diaSemanaInicio = obterDiaSemana(dataInicioRaw);
-        const diaSemanaFim = obterDiaSemana(dataFimRaw);
-        
-        // Primeiro bloco: SERVIÇO DO DIA ... com datas em negrito e centralizado
-        let y = headerY + lineSpacing * 4;
-        const blockX = 10;
-        const blockWidth = 190;
-        const blockMargin = 2; // margem interna para o texto
-        const fixedBlockHeight = 10;
-        
-        doc.rect(blockX, y, blockWidth, fixedBlockHeight);
-        
-        // Dividir o texto em partes para aplicar formatação diferenciada
-        const textPart1 = "SERVIÇO DO DIA ";
-        const textPart2 = dataInicio;
-        const textPart3 = " " + diaSemanaInicio + " PARA O DIA ";
-        const textPart4 = dataFim;
-        const textPart5 = " " + diaSemanaFim;
-        
-        // Calcular larguras das partes para centralizar
-        doc.setFont("helvetica", "normal");
-        let width1 = doc.getTextWidth(textPart1);
-        doc.setFont("helvetica", "bold");
-        let width2 = doc.getTextWidth(textPart2);
-        doc.setFont("helvetica", "normal");
-        let width3 = doc.getTextWidth(textPart3);
-        doc.setFont("helvetica", "bold");
-        let width4 = doc.getTextWidth(textPart4);
-        doc.setFont("helvetica", "normal");
-        let width5 = doc.getTextWidth(textPart5);
-        
-        let totalWidth = width1 + width2 + width3 + width4 + width5;
-        let startX = headerX - totalWidth / 2; // Início para centralizar
-        
-        let currentX = startX;
-        // Parte 1: normal
-        doc.setFont("helvetica", "normal");
-        doc.text(textPart1, currentX, y + 7);
-        currentX += width1;
-        // Parte 2: dataInicio em negrito
-        doc.setFont("helvetica", "bold");
-        doc.text(textPart2, currentX, y + 7);
-        currentX += width2;
-        // Parte 3: normal
-        doc.setFont("helvetica", "normal");
-        doc.text(textPart3, currentX, y + 7);
-        currentX += width3;
-        // Parte 4: dataFim em negrito
-        doc.setFont("helvetica", "bold");
-        doc.text(textPart4, currentX, y + 7);
-        currentX += width4;
-        // Parte 5: normal
-        doc.setFont("helvetica", "normal");
-        doc.text(textPart5, currentX, y + 7);
-        
-        y += fixedBlockHeight + 4;
-        
-        // Array de campos com a inclusão da propriedade sameRowGroup para agrupamentos múltiplos
-        const fields = [
-            { label: "*", title: "Recebi o serviço do: ", elementId: "recebimento_servico" },
-            //{ label: "*", title: "Faxina: ", elementId: "descricao_faxina" },
-            { label: "*", title: "Cmt de GU SV", elementId: "cmt_de_gu" },
-            { label: "*", title: "Motorista", elementId: "motorista" },
-            { label: "*", title: "3º Homem", elementId: "terceiro_homem" },
-            { label: "*", title: "4º Homem", elementId: "quarto_homem" },
-            // Grupo 1: Campos 6, 7, 8 e (exemplo)  --- nesse grupo os campos ficarão juntos
-            { label: "*", title: "VTR", elementId: "vtr", sameRowGroup: "group1" },
-            { label: "*", title: "KM Inicial", elementId: "km_inicial", sameRowGroup: "group1" },
-            { label: "*", title: "KM Final", elementId: "km_final", sameRowGroup: "group1" },
-            // Grupo 2: Campos 9 e 10 - agrupados em linha diferente
-            { label: "*", title: "Qtd de abastecimento em Litros", elementId: "abastecimento", sameRowGroup: "group2" },
-            { label: "*", title: "Local de Abastecimento", elementId: "local_abastecimento", sameRowGroup: "group2" },
-            // Campos individuais restantes
-            { label: "*", title: "Ocorrência", elementId: "ocorrencia" },
-            { label: "*", title: "TCO - Lavrado", elementId: "tco_lavrados" },
-            { label: "*", title: "Material carga disponivel para o serviço:", elementId: "ARMAMENTO_APOIO" },
-            { label: "*", title: "Apreensões", elementId: "apreensao" },
-            { label: "*", title: "Notificações", elementId: "notificacao" },
-            { label: "*", title: "Apresentações, Extraordinaria e Outros", elementId: "apresentacoes_unidade" },
-            { label: "*", title: "Observações", elementId: "observacao" },
-            // Campo custom: Passagem de Serviço, onde será concatenado o texto adicional
-            { label: "*", title: "Passagem de Serviço para o ", elementId: "passagem_servico", custom: true }
-        ];
-        
-        // Pré-processamento: agrupar os campos que possuem a propriedade sameRowGroup
-        const finalFields = [];
-        for (let i = 0; i < fields.length; i++) {
-            if (fields[i].sameRowGroup) {
-                let groupId = fields[i].sameRowGroup;
-                let groupArray = [fields[i]];
-                while (i + 1 < fields.length && fields[i + 1].sameRowGroup === groupId) {
-                    groupArray.push(fields[i + 1]);
-                    i++;
-                }
-                finalFields.push({ group: true, fields: groupArray });
-            } else {
-                finalFields.push(fields[i]);
-            }
-        }
-        
-        // Define o espaçamento de linha para o texto dentro dos blocos
-        const currentLineHeight = 6;
-        
-        // Renderização dos campos ou grupos
-        finalFields.forEach(item => {
-            if (item.group) {
-                // Renderiza o grupo de campos na mesma linha
-                const group = item.fields;
-                const numFields = group.length;
-                const subBlockWidth = blockWidth / numFields;
-                let maxHeight = 0;
-                // Processa cada campo do grupo para calcular a altura necessária
-                let subFieldsData = group.map(field => {
-                    let val = document.getElementById(field.elementId).value.trim();
-                    if (!val) return null; // Pula se vazio
-                    let fullText = `${field.label} | ${field.title}: ${val}`;
-                    let parts = fullText.split(": ");
-                    let labelPart = parts[0] + ": ";
-                    let answerPart = parts.slice(1).join(": ");
-                    doc.setFont("helvetica", "bold");
-                    let labelWidth = doc.getTextWidth(labelPart);
-                    doc.setFont("helvetica", "normal");
-                    let availableWidth = subBlockWidth - blockMargin * 2 - labelWidth;
-                    let answerLines = doc.splitTextToSize(answerPart, availableWidth);
-                    let dynamicBlockHeight = answerLines.length * currentLineHeight + 2;
-                    maxHeight = Math.max(maxHeight, dynamicBlockHeight);
-                    return { field, labelPart, answerLines, labelWidth };
-                }).filter(data => data !== null);
-                
-                // Desenha um retângulo para todo o grupo
-                doc.rect(blockX, y, blockWidth, maxHeight);
-                
-                // Renderiza cada campo dentro do grupo
-                subFieldsData.forEach((data, i) => {
-                    let subX = blockX + i * subBlockWidth;
-                    let textX = subX + blockMargin;
-                    let textY = y + currentLineHeight;
-                    doc.setFont("helvetica", "bold");
-                    doc.text(data.labelPart, textX, textY);
-                    doc.setFont("helvetica", "normal");
-                    doc.text(data.answerLines[0], textX + data.labelWidth, textY);
-                    textY += currentLineHeight;
-                    let additionalLines = data.answerLines.slice(1);
-                    additionalLines.forEach(line => {
-                        doc.text(line, textX, textY);
-                        textY += currentLineHeight;
-                    });
-                });
-                y += maxHeight + 2;
-            } else if (item.custom) {
-                // Renderiza o campo custom ("Passagem de Serviço para o ...")
-                let val = document.getElementById(item.elementId).value.trim();
-                if (!val) return;  // Pula se vazio
-                // Aqui concatenamos o valor com o texto adicional desejado
-                let fullText = `${item.title}${val}; com todas as ordens em vigor e alterações anotadas.`;
-                const customLines = doc.splitTextToSize(fullText, blockWidth - blockMargin * 2);
-                const dynamicBlockHeight = customLines.length * currentLineHeight + 2;
-                doc.rect(blockX, y, blockWidth, dynamicBlockHeight);
-                doc.setFont("helvetica", "normal");
-                customLines.forEach((line, index) => {
-                    doc.text(line, blockX + blockMargin, y + currentLineHeight * (index + 1));
-                });
-                y += dynamicBlockHeight + 2;
-            } else {
-                // Renderiza campo individual
-                let val = document.getElementById(item.elementId).value.trim();
-                if (!val) return;  // Pula se vazio
-                let fullText = `${item.label} | ${item.title}: ${val}`;
-                let parts = fullText.split(": ");
-                let labelPart = parts[0] + ": ";
-                let answerPart = parts.slice(1).join(": ");
-                doc.setFont("helvetica", "bold");
-                let labelWidth = doc.getTextWidth(labelPart);
-                doc.setFont("helvetica", "normal");
-                let availableWidthFirst = blockWidth - blockMargin * 2 - labelWidth;
-                let answerLines = doc.splitTextToSize(answerPart, availableWidthFirst);
-                const dynamicBlockHeight = answerLines.length * currentLineHeight + 2;
-                doc.rect(blockX, y, blockWidth, dynamicBlockHeight);
-                let textY = y + currentLineHeight;
-                doc.setFont("helvetica", "bold");
-                doc.text(labelPart, blockX + blockMargin, textY);
-                doc.setFont("helvetica", "normal");
-                doc.text(answerLines[0], blockX + blockMargin + labelWidth, textY);
-                textY += currentLineHeight;
-                let additionalLines = answerLines.slice(1);
-                additionalLines.forEach(line => {
-                    doc.text(line, blockX + blockMargin, textY);
-                    textY += currentLineHeight;
-                });
-                y += dynamicBlockHeight + 2;
-            }
-        });
-        
-        // Adiciona os campos de assinatura
-        const pageHeight = doc.internal.pageSize.getHeight();
-        let sigY = pageHeight - 20;
-        doc.setFont("helvetica", "bold");
-    
-        doc.text("CMT DO NPM", doc.internal.pageSize.getWidth() - 10, sigY, { align: "right" });
-        doc.text("____________", doc.internal.pageSize.getWidth() - 10, sigY - 6, { align: "right" });
-        doc.text("VISTO EM __/___/____", doc.internal.pageSize.getWidth() - 10, sigY + 6, { align: "right" });
-        
-        
-       // doc.text("GUSTAVO ROBERT DE OLIVEIRA - CB PMMT", doc.internal.pageSize.getWidth() - 65, sigY - 12, { align: "right" });
-        doc.text("_________________________________________", doc.internal.pageSize.getWidth() - 65, sigY - 19, { align: "right" });
-        ///doc.text(cmt_de_gu.value, headerX, headerY + lineSpacing * 2, { align: "center" });
-        ///doc.text("GRADUADO DE DIA", headerX, headerY + lineSpacing * 2, { align: "center" });
-     doc.text(cmt_de_gu.value, doc.internal.pageSize.getWidth() - 70, sigY - 12, { align: "right" });
-        doc.text("GRADUADO DE DIA", doc.internal.pageSize.getWidth() - 90, sigY - 6, { align: "right" });
-        // Salva o arquivo PDF, incluindo a data de início no nome
-        doc.save("Livro_Diario_NPM_Denise_" + dataInicio + ".pdf");
+
+
+  function adicionarRodape() { // Rodapé
+         doc.setFontSize(8);          
+            
+
+//doc.line(170, 280, 200, 280);
+
+      doc.setFont("helvetica", "normal");
+      doc.text("NUCLEO DE POLICIA MILITAR DE DENISE", 105, 285, { align: "center" });
+      doc.text("Rua Piaui - Bairro Centro - Denise-MT - CEP 78.380-000", 105, 288, { align: "center" });
+      doc.text("Fone: (65) 98170-0447 | E-mail: npmdenise@pm.mt.gov.br", 105, 291, { align: "center" });
+    }
+
+
+
+
+const select1 = document.getElementById("recebi_servico");
+const textoSelecionadoRecebimento = select1.options[select1.selectedIndex].text;
+
+const select2 = document.getElementById("cmt_sv");
+const textoSelecionadoCmtsv = select2.options[select2.selectedIndex].text;
+
+const select3 = document.getElementById("motorista");
+const textoSelecionadoMot = select3.options[select3.selectedIndex].text;
+
+const select4 = document.getElementById("3HOMEM");
+const textoSelecionado3Hom = select4.options[select4.selectedIndex].text;
+
+const select5 = document.getElementById("4HOMEM");
+const textoSelecionado4Hom = select5.options[select5.selectedIndex].text;
+
+const select6 = document.getElementById("vtr");
+const textoSelecionadoVtr = select6.options[select6.selectedIndex].text;
+
+const km_inicial = document.getElementById("km_inicial").value
+const km_final = document.getElementById("km_final").value
+const abastecimento = document.getElementById("abastecimento").value
+const local_abastecimento = document.getElementById("local_abastecimento").value
+const ocorrencia = document.getElementById("ocorrencia").value
+const tco = document.getElementById("tco").value
+const material = document.getElementById("material").value
+const apreensoes = document.getElementById("apreensoes").value
+const notificacoes = document.getElementById("notificacoes").value
+const apresentacoes = document.getElementById("apresentacoes").value
+const observacoes = document.getElementById("observacoes").value
+const passagem_texto = document.getElementById("passagem_texto").value
+
+const datainicio = document.getElementById("data_inicio").value
+const datafim = document.getElementById("data_fim").value
+
+
+
+
+const dataStr = document.getElementById("data_inicio").value; // "2025-08-12"
+const [ano, mes, dia] = dataStr.split("-").map(Number);
+
+// Criar data corretamente no fuso local
+const dataObj = new Date(ano, mes - 1, dia); // Mês começa do 0 (janeiro)
+
+// Formatar: "12 de agosto de 2025"
+const dataFormatada = new Intl.DateTimeFormat("pt-BR", {
+  day: "numeric",
+  month: "long",
+  year: "numeric"
+}).format(dataObj);
+
+const diasSemana = [
+  "domingo",
+  "segunda-feira",
+  "terça-feira",
+  "quarta-feira",
+  "quinta-feira",
+  "sexta-feira",
+  "sábado"
+];
+
+const diaSemana = diasSemana[dataObj.getDay()];
+//console.log(diaSemana);  // ex: "terça-feira"
+
+//console.log(dataFormatada);
+
+
+
+
+const dataStrfim = document.getElementById("data_fim").value; // "2025-08-12"
+const [anofim, mesfim, diafim] = dataStrfim.split("-").map(Number);
+
+// Criar data corretamente no fuso local
+const dataObjfim = new Date(anofim, mesfim - 1, diafim); // Mês começa do 0 (janeiro)
+
+// Formatar: "12 de agosto de 2025"
+const dataFormatadafim = new Intl.DateTimeFormat("pt-BR", {
+  day: "numeric",
+  month: "long",
+  year: "numeric"
+}).format(dataObjfim);
+
+const diaSemanafim = diasSemana[dataObjfim.getDay()];
+//console.log(diaSemana);  // ex: "terça-feira"
+
+//console.log(dataFormatada);
+
+//console.log(dataFormatada);
+
+
+
+
+         adicionarCabecalho()
+         adicionarRodape()
+      // Conteúdo
+
+      let coluna1 = 8
+      let coluna2 =202
+
+
+      //linha do rodape
+doc.line(coluna1, 281, coluna2, 281);
+      // fim da linha do rodape
+
+doc.line(coluna1, 50, coluna1, 281);
+doc.line(coluna2, 50, coluna2, 281);
+
+
+//doc.line(coluna1+7, 56, coluna1+7, 281);
+
+
+      //----
+
+doc.line(174, 37, coluna2, 37);
+doc.line(174, 7, coluna2, 7);
+
+doc.line(176, 15, 198, 15);
+//doc.text("DATA", 180, 18, );
+doc.text("DATA", 184, 18, { maxWidth: 170, align: 'justify'});
+
+doc.line(176, 30, 198, 30);
+//doc.text("DATA", 180, 18, );
+doc.text("VISTO CMD", 180, 33, { maxWidth: 170, align: 'justify'});
+
+
+doc.line(174, 7, 174, 37);
+doc.line(coluna2, 7, coluna2, 37);
+
+
+
+doc.setFontSize(9);
+      doc.setFont("helvetica", "normal");
+
+
+      let linha = 50
+      let iniciotextolinha = 16
+
+ doc.line(coluna1, linha, coluna2, linha);     
+
+linha = linha+4
+ doc.setFont("helvetica", "bold");
+doc.text(`SERVIÇO DO DIA ${dataFormatada.toUpperCase()} - ${diaSemana.toUpperCase()} PARA O DIA ${dataFormatadafim.toUpperCase()} - ${diaSemanafim.toUpperCase()}`, 105, linha, { align: "center" });
+linha = linha+2
+doc.line(coluna1, linha, coluna2, linha);
+
+
+//if (textoSelecionadoRecebimento !== "Selecione...") {
+linha = linha+4
+ doc.setFont("helvetica", "normal");
+doc.text(`| RECEBI O SERVIÇO DO: ${textoSelecionadoRecebimento}`, iniciotextolinha, linha, );
+doc.text("01", 10, linha);
+linha = linha+2
+doc.line(coluna1, linha, coluna2, linha);
+doc.line(coluna1+7, linha-6, coluna1+7, linha);
+
+//if (textoSelecionadoCmtsv !== "Selecione...") {
+linha = linha+4
+doc.text(`02                                       | CMT DE GU SV: ${textoSelecionadoCmtsv}`, 10, linha, );
+doc.text("ESCALA DE",16, linha,);
+doc.text("SERVIÇO 24",16, linha +3,);
+doc.text("HORAS",16, linha +6,);
+linha = linha+2
+doc.line(coluna1+40, linha-6, coluna1+40, linha+6);
+doc.line(coluna1+7, linha-6, coluna1+7, linha);
+
+
+linha = linha+4
+if (textoSelecionadoMot !== "Selecione...") {
+doc.text(`      | MOTORISTA: ${textoSelecionadoMot}`, 43, linha, );
+}
+linha = linha+2
+//doc.line(coluna1, linha, coluna2, linha);
+doc.line(coluna1+7, linha-6, coluna1+7, linha);
+doc.line(coluna1+40, linha-6, coluna1+40, linha);
+
+
+if (textoSelecionado3Hom !== "Selecione...") {
+linha = linha+4
+doc.text(`      | 3º HOMEM: ${textoSelecionado3Hom}`, 43, linha, );
+linha = linha+2
+//doc.line(coluna1, linha, coluna2, linha);
+doc.line(coluna1+7, linha-6, coluna1+7, linha);
+doc.line(coluna1+40, linha-6, coluna1+40, linha);
+}
+
+if (textoSelecionado4Hom !== "Selecione...") {
+linha = linha+4
+doc.text(`      | 4ª HOMEM: ${textoSelecionado4Hom}`, 43, linha, );
+doc.line(coluna1+7, linha-6, coluna1+7, linha);
+doc.line(coluna1+40, linha-6, coluna1+40, linha+2);
+linha = linha+2
+
+}
+doc.line(coluna1, linha, coluna2, linha);
+
+
+//if (textoSelecionadoVtr !== "Selecione...") {
+linha = linha+4
+
+doc.text(`| VTR: ${textoSelecionadoVtr}`, iniciotextolinha, linha, );
+doc.text("03", 10, linha);
+//doc.setFont("helvetica", "normal");
+//doc.text(" * | VTR: ", 12, linha);
+
+//doc.setFont("helvetica", "bold");
+//doc.text(textoSelecionadoVtr, doc.getTextWidth(" * | VTR: ") + 12, linha);
+
+doc.setFont("helvetica", "normal"); // volta ao normal, se necessário
+
+doc.text(` * | KM INICIAL: ${km_inicial}`, 80, linha, );
+doc.text(` * | KM FINAL: ${km_final}`, 150, linha, );
+linha = linha+2
+doc.line(coluna1, linha, coluna2, linha);
+doc.line(coluna1+7, linha-6, coluna1+7, linha);
+
+
+
+linha = linha+4
+doc.text(`| QTD DE ABASTECIMENTO EM LITROS: ${abastecimento}`, iniciotextolinha, linha, );
+doc.text("04", 10, linha);
+doc.text(` | LOCAL DE ABASTECIMENTO: ${local_abastecimento}`, 100, linha, );
+linha = linha+2
+doc.line(coluna1, linha, coluna2, linha);
+doc.line(coluna1+7, linha-6, coluna1+7, linha);
+
+// OCORENCIAS INICIO
+
+let largura = coluna2 - coluna1 ;
+
+linha = linha + 4;
+
+let texto =`| OCORRENCIAS: ${ocorrencia}`;
+
+
+// quebra o texto automaticamente
+let linhasTexto = doc.splitTextToSize(texto, largura);
+
+// escreve o texto (ele já distribui nas linhas)
+doc.text(linhasTexto, iniciotextolinha, linha);
+doc.text("05", 10, linha);
+
+// ajusta a variável "linha" para depois do texto
+linha += linhasTexto.length * 3; // 2 = altura aproximada de cada linha
+
+
+linha = linha+2
+doc.line(coluna1, linha, coluna2, linha);
+doc.line(coluna1+7, linha-6*3, coluna1+7, linha);
+
+// OCORENCIAS FIM
+
+// TCO INICIO
+
+
+linha = linha + 4;
+
+let textoTCO =`| TCO LAVRADO: ${tco}`;
+
+
+// quebra o texto automaticamente
+let linhasTextoTCO = doc.splitTextToSize(textoTCO, largura);
+
+// escreve o texto (ele já distribui nas linhas)
+doc.text(linhasTextoTCO, iniciotextolinha, linha);
+doc.text("06", 10, linha);
+
+// ajusta a variável "linha" para depois do texto
+linha += linhasTextoTCO.length * 3; // 2 = altura aproximada de cada linha
+
+
+linha = linha+2
+doc.line(coluna1, linha, coluna2, linha);
+doc.line(coluna1+7, linha-6*3, coluna1+7, linha);
+
+
+// TCO FIM 
+
+// INICIO MATERIAL CARGA
+
+
+linha = linha + 4;
+let materiapadrao = "01 GALGE CAL 12 No P-47761-FRANCHI; GALGE 12 NoC1575042S; 01 CARABINA 556 Imbel; 01 FUZIL ARAD | MUNIÇÕES: 100 UNIDCAL. 556 CBC, 50 UNID GALGE 12. LETAL E 12 ANTI-MOTIM, 250 UNID CAL 300"
+var materialpadraoglobal = materiapadrao
+
+let textoMATERIALCARGA =`| MATERIAL CARGA DISPONIVEL PARA O SERVIÇO - ARMAMENTO_APOIO: ${material === materiapadrao ? materiapadrao : material}`;
+
+
+// quebra o texto automaticamente
+let linhasTextoMATERIALCARGA = doc.splitTextToSize(textoMATERIALCARGA, largura-10);
+
+// escreve o texto (ele já distribui nas linhas)
+doc.text(linhasTextoMATERIALCARGA, iniciotextolinha, linha);
+doc.text("07", 10, linha);
+
+// ajusta a variável "linha" para depois do texto
+linha += linhasTextoMATERIALCARGA.length * 3; // 2 = altura aproximada de cada linha
+
+
+linha = linha+2
+doc.line(coluna1, linha, coluna2, linha);
+doc.line(coluna1+7, linha-6*3, coluna1+7, linha);
+
+
+// FIM DO MATERIAL CARGA
+
+// INICIO APREENSOES
+
+linha = linha + 4;
+
+let textoAPREENSOES =`| APREENSÕES: ${apreensoes}`;
+
+
+// quebra o texto automaticamente
+let linhasTextoAPREENSOES = doc.splitTextToSize(textoAPREENSOES, largura);
+
+// escreve o texto (ele já distribui nas linhas)
+doc.text(linhasTextoAPREENSOES, iniciotextolinha, linha);
+doc.text("08", 10, linha);
+
+// ajusta a variável "linha" para depois do texto
+linha += linhasTextoAPREENSOES.length * 3; // 2 = altura aproximada de cada linha
+
+
+linha = linha+2
+doc.line(coluna1, linha, coluna2, linha);
+doc.line(coluna1+7, linha-6*3, coluna1+7, linha);
+
+
+// FIM APREENSOES
+
+// INICIO NOTIFICAÇÕES
+
+linha = linha + 4;
+
+let textoNOTIFICACOES =`| NOTIFICAÇÕES: ${notificacoes}`;
+
+
+// quebra o texto automaticamente
+let linhasTextoNOTIFICACOES = doc.splitTextToSize(textoNOTIFICACOES, largura -10);
+
+// escreve o texto (ele já distribui nas linhas)
+doc.text(linhasTextoNOTIFICACOES, iniciotextolinha, linha);
+doc.text("09", 10, linha);
+
+// ajusta a variável "linha" para depois do texto
+linha += linhasTextoNOTIFICACOES.length * 3; // 2 = altura aproximada de cada linha
+
+
+linha = linha+2
+doc.line(coluna1, linha, coluna2, linha);
+doc.line(coluna1+7, linha-6*3, coluna1+7, linha);
+
+// FIM NOTIFICAÇÕES
+
+// INICIO APRESENTAÇÕES EXTRA E OUTROS
+
+linha = linha + 4;
+
+let textoAPRESENTACOES=`| APRESENTAÇÕES - EXTRAORDINARIA - OUTROS: ${apresentacoes}`;
+
+
+// quebra o texto automaticamente
+let linhasTextoAPRESENTACOES = doc.splitTextToSize(textoAPRESENTACOES, largura); 
+
+// escreve o texto (ele já distribui nas linhas)
+doc.text(linhasTextoAPRESENTACOES, iniciotextolinha, linha);
+doc.text("10", 10, linha);
+
+// ajusta a variável "linha" para depois do texto
+linha += linhasTextoAPRESENTACOES.length * 3; // 2 = altura aproximada de cada linha
+
+
+linha = linha+2
+doc.line(coluna1, linha, coluna2, linha);
+doc.line(coluna1+7, linha-6*3, coluna1+7, linha);
+
+
+// FIM APRESENTAÇÕES EXTRA E OUTROS
+
+
+// INICIO OBSERVAÇÕES
+
+linha = linha + 4;
+
+let textoOBS =`| OBSERVAÇÕES: ${observacoes}`;
+
+
+// quebra o texto automaticamente
+let linhasTextoOBS = doc.splitTextToSize(textoOBS, largura);
+
+// escreve o texto (ele já distribui nas linhas)
+doc.text(linhasTextoOBS, iniciotextolinha, linha);
+doc.text("11", 10, linha);
+
+// ajusta a variável "linha" para depois do texto
+linha += linhasTextoOBS.length * 4; // 2 = altura aproximada de cada linha
+
+
+linha = linha+2
+doc.line(coluna1, linha, coluna2, linha);
+doc.line(coluna1+7, linha-6*4, coluna1+7, linha);
+
+
+// FIM OBSERVAÇÕES
+
+
+// INICIO PASSAGEM DE SERVIÇO 
+
+linha = linha + 4;
+
+let textoPASSAGENDESERVICO =`| PASSAGEM DE SERVIÇO: ${passagem_texto}`;
+
+
+// quebra o texto automaticamente
+let linhasTextoPASSAGENDESERVICO = doc.splitTextToSize(textoPASSAGENDESERVICO, largura -10);
+
+// escreve o texto (ele já distribui nas linhas)
+doc.text(linhasTextoPASSAGENDESERVICO, iniciotextolinha, linha);
+doc.text("12", 10, linha);
+// ajusta a variável "linha" para depois do texto
+linha += linhasTextoPASSAGENDESERVICO.length * 3; // 2 = altura aproximada de cada linha
+
+
+linha = linha+2
+doc.line(coluna1, linha, coluna2, linha);
+doc.line(coluna1+7, linha-6*3, coluna1+7, linha);
+
+
+// FIM PASSAGEM DE SERVIÇO 
+
+
+// INICIO ASSINATURA DO CMT GUSV
+linha = linha + 20
+
+doc.line(coluna1 + 50, linha, coluna2 - 50, linha);
+
+
+doc.setFont("helvetica", "bold");
+
+linha = linha + 4;
+
+doc.text(`${textoSelecionadoCmtsv}`, 105, linha, { align: "center" });
+linha = linha + 4;
+doc.text("GRADUADO DE DIA", 105, linha, { align: "center" });
+
+// FIM ASSINATURA DO CMT GUSV
+
+
+
+doc.setFontSize(12);
+      
+
+     
+
+      // Gera o download
+      doc.save(`SERVIÇO DO DIA ${dataFormatada.toUpperCase()} - ${diaSemana.toUpperCase()} PARA O DIA ${dataFormatadafim.toUpperCase()} - ${diaSemanafim.toUpperCase()}.pdf`);
     }
   </script>
-</body>
-</html>
+
+
+
+<!--FIM PDF-->
 
 
 
 
 
+
+        </form>
+      </section>
+
+      <section id="audiencia" class="content">
+        <h2>Audiência</h2>
+        <p>Cadastro de audiência do efetivo.</p>
+        <form>
+          <label for="select-nomes">Selecione o Militar:</label>
+          <select id="select-nomes">
+            <option value="">Carregando...</option>
+          </select>
+          <br><br>
+
+          <label>Data:</label>
+          <input type="date"><br><br>
+
+          <label>Descrição:</label><br>
+          <input type="text"><br><br>
+
+          <div class="form-buttons">
+            <button type="button">Novo</button>
+            <button type="button">Editar</button>
+            <button type="button">Excluir</button>
+            <button type="submit">Salvar</button>
+          </div>
+        </form>
+
+
+
+
+
+
+
+
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 Sis-GRO-PMMT</p>
+    </footer>
+
+    <!-- Script para preencher datas automaticamente -->
+    <script>
+      (function () {
+        function fmtLocalDate(d) {
+          const y = d.getFullYear();
+          const m = String(d.getMonth() + 1).padStart(2, '0');
+          const day = String(d.getDate()).padStart(2, '0');
+          return `${y}-${m}-${day}`;
+        }
+
+        window.addEventListener('DOMContentLoaded', function () {
+          const hoje   = new Date();
+          const ontem  = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() + 1);
+          const amanha = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() + 2);
+
+          const dataInicio = document.getElementById('data_inicio'); // ontem
+          const dataFim    = document.getElementById('data_fim');    // amanhã
+          const dataLivro  = document.getElementById('datalivro');   // hoje
+
+          if (dataInicio && !dataInicio.value) dataInicio.value = fmtLocalDate(ontem);
+          if (dataFim && !dataFim.value)       dataFim.value    = fmtLocalDate(amanha);
+          if (dataLivro && !dataLivro.value)   dataLivro.value  = fmtLocalDate(amanha);
+        });
+      })();
+    </script>
+
+  <script>
+    // Lista única de militares
+    const militares = [
+      { posto: "1º SGT PM", qra: "BRUNO", nome: "ANGELO MARCIO PRADO BRUNO", rgpm: "880.298" },
+      { posto: "2º SGT PM", qra: "BROLEZI", nome: "BROLEZI", rgpm: "882.309" },
+      { posto: "3º SGT PM", qra: "CAMPOS", nome: "ALLAN CARLOS CAMPOS", rgpm: "886.601" },
+      { posto: "CB PM", qra: "ROBERT", nome: "GUSTAVO ROBERT DE OLIVEIRA", rgpm: "885.812" },
+      { posto: "CB PM", qra: "JOSIMAR", nome: "JOSIMAR PEREIRA DA COSTA", rgpm: "886.222" },
+      { posto: "CB PM", qra: "R. SOUZA", nome: "RICARDO DA SILVA SOUZA", rgpm: "885.860" },
+      { posto: "CB PM", qra: "SOUZA", nome: "GUILHERME SOUZA SILVA", rgpm: "885.916" },
+      { posto: "SD PM", qra: "THIAGO", nome: "ELEILTON THIAGO", rgpm: "886.613" },
+      { posto: "SD PM", qra: "BRUNA", nome: "BRUNA ASSIS", rgpm: "886.605" },
+      { posto: "SD PM", qra: "LOBO", nome: "EDSON BRUNO MARTINS LOBO", rgpm: "886.612" },
+      { posto: "SD PM", qra: "DOUGLAS", nome: "DOUGLAS BEZERRA DE OLIVEIRA", rgpm: "887.192" }
+    ];
+
+    // Preenche todos os selects que usam a classe "lista-militares"
+    document.querySelectorAll("select.lista-militares").forEach(select => {
+      militares.forEach(militar => {
+        const opt = document.createElement("option");
+
+        // O que aparece na lista
+        opt.textContent = `${militar.posto} ${militar.qra} - RGPM ${militar.rgpm}`;
+
+        // O que é salvo no formulário (aqui só o QRA)
+        opt.value = militar.qra;
+
+        select.appendChild(opt);
+      });
+      });
+  </script>
+
+
+
+<!--// comeco do script externo copiado aqui-->
+    <script>
+    const menuToggle = document.getElementById('mobile-menu');
+  const navList = document.querySelector('.nav-list');
+
+  menuToggle.addEventListener('click', () => {
+    navList.classList.toggle('active');
+  });
+
+  document.querySelectorAll('.nav-list a').forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const sectionId = link.getAttribute('data-section');
+
+      document.querySelectorAll('main .content').forEach(sec => {
+        sec.classList.remove('active');
+      });
+
+      document.getElementById(sectionId).classList.add('active');
+
+      navList.classList.remove('active');
+    });
+  });
+
+  const loginOverlay = document.getElementById('login-overlay');
+  const logoutBtn = document.getElementById('logout-btn');
+  const body = document.body;
+
+  function fazerLogin() {
+    const userInput = document.getElementById('login-user').value.trim();
+    const passInput = document.getElementById('login-pass').value.trim();
+    const errorDiv = document.getElementById('login-error');
+
+    if(userInput === 'pmmt' && passInput === '@2025pmmt') {
+      errorDiv.textContent = '';
+      loginOverlay.style.display = 'none';
+      body.classList.remove('locked');
+
+      // Salvar status de login
+      localStorage.setItem('logado', 'true');
+      logoutBtn.style.display = 'block';
+    } else {
+      errorDiv.textContent = 'Usuário ou senha incorretos.';
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem('logado');
+    loginOverlay.style.display = 'flex';
+    body.classList.add('locked');
+    logoutBtn.style.display = 'none';
+
+    // Limpar campos de login
+    document.getElementById('login-user').value = '';
+    document.getElementById('login-pass').value = '';
+    document.getElementById('login-error').textContent = '';
+  }
+
+  // Checar login ao carregar a página
+  window.addEventListener('load', () => {
+    if(localStorage.getItem('logado') === 'true') {
+      loginOverlay.style.display = 'none';
+      body.classList.remove('locked');
+      logoutBtn.style.display = 'block';
+    } else {
+      loginOverlay.style.display = 'flex';
+      body.classList.add('locked');
+      logoutBtn.style.display = 'none';
+    }
+  });
+
+  // Permitir login ao pressionar Enter
+  document.getElementById('login-pass').addEventListener('keyup', function(event) {
+    if(event.key === 'Enter') {
+      fazerLogin();
+    }
+  });
+  document.getElementById('login-user').addEventListener('keyup', function(event) {
+    if(event.key === 'Enter') {
+      fazerLogin();
+    }
+  });
+
+
+
+
+
+
+  // Função para carregar efetivo.html e preencher select
+  async function carregarEfetivo() {
+    try {
+      const response = await fetch('efetivo.html');
+      const text = await response.text();
+
+      // Criar DOM temporário para manipular o HTML carregado
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(text, 'text/html');
+
+      // Pegar as linhas da tabela
+      const rows = doc.querySelectorAll('#tabela-efetivo tbody tr');
+
+      const select = document.getElementById('select-nomes');
+      select.innerHTML = ''; // limpa as opções
+
+      rows.forEach(row => {
+        const nome = row.cells[0].textContent.trim();
+        // Pode usar o nome como value e texto da option
+        const option = document.createElement('option');
+        option.value = nome;
+        option.textContent = nome;
+        select.appendChild(option);
+      });
+
+    } catch (err) {
+      console.error('Erro ao carregar efetivo:', err);
+      const select = document.getElementById('select-nomes');
+      select.innerHTML = '<option>Erro ao carregar nomes</option>';
+    }
+  }
+
+  // Chama a função após carregar a página
+  window.addEventListener('load', carregarEfetivo);
+
+    </script>
+
+    
+
+
+
+<!-- inicio do store-->
+
+<script>
+  (function () {
+    const formId = "livrodiario";
+    const storageKey = "form_livrodiario";
+
+    // Salvar no localStorage sempre que algo for alterado
+    function salvarAutomaticamente() {
+      const form = document.querySelector(`#${formId} form`);
+      const dados = {};
+
+      form.querySelectorAll("input, select, textarea").forEach(el => {
+        if (el.id) {
+          dados[el.id] = el.value;
+        }
+      });
+
+      localStorage.setItem(storageKey, JSON.stringify(dados));
+    }
+
+    // Carregar dados salvos e preencher campos
+    function restaurarFormulario() {
+      const dadosSalvos = localStorage.getItem(storageKey);
+      if (!dadosSalvos) return;
+
+      const dados = JSON.parse(dadosSalvos);
+      for (const id in dados) {
+        const el = document.getElementById(id);
+        if (el) {
+          el.value = dados[id];
+        }
+      }
+    }
+
+    // Monitorar todos os campos
+    function monitorarCampos() {
+      const form = document.querySelector(`#${formId} form`);
+      form.querySelectorAll("input, select, textarea").forEach(el => {
+        el.addEventListener("input", salvarAutomaticamente);
+        el.addEventListener("change", salvarAutomaticamente);
+      });
+    }
+
+// reset inicio
+function resetarFormularioParaOriginal() {
+  // Nome da chave usada no localStorage
+  const storageKey = "form_livrodiario";
+
+  // Remove os dados salvos
+  localStorage.removeItem(storageKey);
+
+  // Pega o formulário
+  const form = document.querySelector("#livrodiario form");
+
+  // Reseta os campos para os valores originais definidos no HTML
+  form.reset();
+
+  // Se quiser recarregar a página para forçar o DOMContentLoaded a rodar de novo:
+  // location.reload();  // (opcional)
+}
+
+// reset fim 
+
+
+
+    // Criar botão de resetar
+    function criarBotaoResetar() {
+      const form = document.querySelector(`#${formId} form`);
+      const botao = document.createElement("button");
+      botao.textContent = "Resetar para Original";
+      botao.type = "button";
+      botao.style.marginLeft = "10px";
+      botao.style.backgroundColor = "#dc3545";
+      botao.style.border = "none";
+      botao.style.padding = "10px 20px";
+      botao.style.borderRadius = "4px";
+      botao.style.color = "white";
+      botao.style.cursor = "pointer";
+
+     // botao.addEventListener("click", () => {
+       // if (confirm("Tem certeza que deseja limpar o formulário e restaurar o estado original?")) {
+        //  localStorage.removeItem(storageKey);
+         // location.reload();
+       // }
+      //});
+
+
+botao.addEventListener("click", () => {
+  if (confirm("Tem certeza que deseja limpar o formulário e restaurar o estado original?")) {
+    resetarFormularioParaOriginal(); // 👈 agora chamando a função corretamente
+  }
+});
+
+
+      form.querySelector("button[type='submit']").after(botao);
+    }
+
+    // Executar tudo ao carregar
+    window.addEventListener("DOMContentLoaded", () => {
+      //restaurarFormulario();
+      monitorarCampos();
+      criarBotaoResetar();
+      
+    });
+  })();
+</script>
+
+
+
+<!-- fim do store-->
+
+
+  </body>
+  </html>
