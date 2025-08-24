@@ -476,7 +476,7 @@ F        </select>
           </div>
 
           <div>
-        <label for="passagem_select">Passagem de Serviço</label>
+        <label for="passagem_select">Passo o serviço para o</label>
         <select id="passagem_select" name="passagem_select" class="lista-militares">
           <option value="">Selecione...</option>
         </select>
@@ -484,7 +484,7 @@ F        </select>
 
 
       <div>
-            <label for="passagem_texto">Passagem de serviço</label>
+            <label for="passagem_texto">Descrição do texto para passagem de serviço</label>
             <textarea id="passagem_texto" name="passagem_texto"></textarea>
           </div>
 
@@ -1045,7 +1045,21 @@ doc.setFontSize(12);
      
 
       // Gera o download
-      doc.save(`SERVIÇO DO DIA ${dataFormatada.toUpperCase()} - ${diaSemana.toUpperCase()} PARA O DIA ${dataFormatadafim.toUpperCase()} - ${diaSemanafim.toUpperCase()}.pdf`);
+     // doc.save(`SERVIÇO DO DIA ${dataFormatada.toUpperCase()} - ${diaSemana.toUpperCase()} PARA O DIA ${dataFormatadafim.toUpperCase()} - ${diaSemanafim.toUpperCase()}.pdf`);
+
+const agora = new Date();
+const hora = String(agora.getHours()).padStart(2, '0');
+const minuto = String(agora.getMinutes()).padStart(2, '0');
+const segundo = String(agora.getSeconds()).padStart(2, '0');
+
+const nomeArquivo = `SERVIÇO DO DIA ${dataFormatada.toUpperCase()} - ${diaSemana.toUpperCase()} PARA O DIA ${dataFormatadafim.toUpperCase()} - ${diaSemanafim.toUpperCase()} - ${hora}${minuto}${segundo}.pdf`;
+
+doc.save(nomeArquivo);
+
+
+
+
+
     }
   </script>
 
