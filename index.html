@@ -414,12 +414,12 @@ F        </select>
         
     <div style="flex:1;">
       <label for="km_inicial">KM Inicial</label>
-      <input type="number" id="km_inicial" name="km_inicial" value ="S/A">
+      <input type="number" id="km_inicial" name="km_inicial" >
     </div>
 
     <div style="flex:1;">
       <label for="km_final">KM Final</label>
-      <input type="number" id="km_final" name="km_final" value ="S/A">
+      <input type="number" id="km_final" name="km_final" >
     </div>
     <div>
             <label for="abastecimento">Qtd de abastecimento em Litros</label>
@@ -585,12 +585,74 @@ document.getElementById('observacoes').value = "S/A"
 
 
 
+
+<script>
+function validarCampos() {
+  const vtr = document.getElementById("vtr");
+  const kmInicial = document.getElementById("km_inicial");
+  const kmFinal = document.getElementById("km_final");
+
+  let erros = [];
+
+  // Reset visual
+  [vtr, kmInicial, kmFinal].forEach(el => {
+    el.style.border = "1px solid #ccc";
+  });
+
+  // Valida VTR
+  if (!vtr.value) {
+    erros.push("Selecione a VTR.");
+    vtr.style.border = "2px solid red";
+  }
+
+  // Valida KM inicial
+  if (!kmInicial.value) {
+    erros.push("Informe o KM inicial.");
+    kmInicial.style.border = "2px solid red";
+  }
+
+  // Valida KM final
+  if (!kmFinal.value) {
+    erros.push("Informe o KM final.");
+    kmFinal.style.border = "2px solid red";
+  }
+
+  // Validação extra (TOP 💡)
+  if (kmInicial.value && kmFinal.value) {
+    if (parseFloat(kmFinal.value) < parseFloat(kmInicial.value)) {
+      erros.push("KM final não pode ser menor que KM inicial.");
+      kmFinal.style.border = "2px solid red";
+    }
+  }
+
+  // Se houver erros
+  if (erros.length > 0) {
+    alert(erros.join("\n"));
+    return false;
+  }
+
+  return true;
+}
+</script>
+
+
   <script>
     function gerarPDF() {
+
+
+if (!validarCampos()) {
+    return; // PARA TUDO se tiver erro
+  }
+
+
+
       // Checa se a lib carregou
       if (!window.jspdf || !window.jspdf.jsPDF) {
         alert("Falha ao carregar jsPDF. Verifique a conexão ou o script de importação.");
         return;
+
+ 
+
       }
 
       const { jsPDF } = window.jspdf;
